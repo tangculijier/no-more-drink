@@ -118,7 +118,6 @@ public class CircleIndicator extends View
 		this.viewPager = viewPager;
 		createTabItems();
 		createMovingItem();
-		//setUpListener();
 	}
 
 
@@ -135,6 +134,7 @@ public class CircleIndicator extends View
 			paint.setAntiAlias(true);
 			shapeHolder.setPaint(paint);
 			tabItems.add(shapeHolder);
+
 		}
 		
 	}
@@ -164,6 +164,10 @@ public class CircleIndicator extends View
 		movingItem.setPaint(movingPaint);
 	}
 	
+	/**
+	 * 
+	viepager监听放到activity中去做
+	此处不用
 	private void setUpListener()
 	{
 		viewPager.setOnPageChangeListener(new OnPageChangeListener()
@@ -196,7 +200,7 @@ public class CircleIndicator extends View
 		});
 		
 	}
-	
+	 */
 	public void trgger(int position, float positionOffset)
 	{
 		if(myIndicatorMode == CircleIndicatorMode.SOLO)
@@ -233,14 +237,27 @@ public class CircleIndicator extends View
 		{
 			final float yCoordinate = containerHeight*0.5f;
 			final float startPosition = startDrawPosition(containerWidth);
+			float x , y;
 			for(int i = 0 ;i < tabItems.size();i++)
 			{
 				ShapeHolder item = tabItems.get(i);
 				item.resizeShape(2 * myIndicatorRadius, 2 * myIndicatorRadius);
-				item.setY(yCoordinate - myIndicatorRadius);
-				float x = startPosition + (myIndicatorMargin + myIndicatorRadius * 2) * i;
+				
+				if(myIndicatorGravity == CircleIndicatorGravity.CENTER)
+				{
+					x = startPosition +  + (myIndicatorMargin + myIndicatorRadius * 2) * i;
+					y = yCoordinate - myIndicatorRadius ;
+				
+				}
+				else
+				{
+					x = startPosition;
+					y = yCoordinate - myIndicatorRadius + (myIndicatorMargin + myIndicatorRadius * 2) * i;
+				}
 		        item.setX(x);
-		        //LogUtil.d("huang", "normal = "+item.getX()+" y ="+item.getY());
+				item.setY(y);
+
+		        LogUtil.d("huang", "item  x="+item.getX()+" y ="+item.getY());
 			}
 		}
 		
@@ -254,12 +271,20 @@ public class CircleIndicator extends View
 		}
 		ShapeHolder item = tabItems.get(position);
 		movingItem.resizeShape(item.getWidth(), item.getHeight());
-		float x = item.getX() + (myIndicatorMargin + myIndicatorRadius * 2)
-				* positionOffset;
-	   
+		float x = 0f , y = 0f;
+		if(myIndicatorGravity == CircleIndicatorGravity.CENTER)
+		{
+			 x = item.getX() + (myIndicatorMargin + myIndicatorRadius * 2) * positionOffset;
+			 y = item.getY();
+		}
+		else
+		{
+			 x = item.getX();
+			 y = item.getY() + (myIndicatorMargin + myIndicatorRadius * 2) * positionOffset;
+		}
 		movingItem.setX(x);
-		movingItem.setY(item.getY());
-		 // LogUtil.d("huang", "movingItem = "+item.getX()+" y ="+item.getY());
+		movingItem.setY(y);
+		//LogUtil.d("huang", "movingItem = "+item.getX()+" y ="+item.getY());
 
 	}
 	
@@ -308,6 +333,7 @@ public class CircleIndicator extends View
 	private void drawItem(Canvas canvas,ShapeHolder shapeHolder )
 	{
 		canvas.save();
+		LogUtil.d("huang", "shapeHolder x="+shapeHolder.getX() +" y="+shapeHolder.getY());
         canvas.translate(shapeHolder.getX(),shapeHolder.getY());
         shapeHolder.getShape().draw(canvas);
         canvas.restore();
