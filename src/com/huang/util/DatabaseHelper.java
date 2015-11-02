@@ -165,7 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			int id = cursor.getInt(0);
 			String date = cursor.getString(1);
 			int type = cursor.getInt(2);
-			habit = new Habit(id, date, type);
+			habit = new Habit(id, date, type); 
 			
 		}
 		cursor.close();
@@ -225,36 +225,86 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	 * @param currentDate 当前时间
 	 * @return 返回数组PartTimeOfDrinktimesOfMonth，数组里边三项分别为一个月上午，下午晚上喝饮料的统计次数
 	 */
-	public int[] getPartTimeOfDrinktimesOfMonth(Date currentDate)
+	public int[] getTimeSectionOfDrinktimesOfMonth(Date currentDate)
 	{
-		int[] partTimeOfDrinktimesOfMonth = new int[3];
+		int[] timeSectionOfDrinktimesOfMonth = new int[3];
 		SQLiteDatabase db = this.getReadableDatabase();
-
-		int[] timeSection = { 0, 12, 18, 24 };
-		int hour = 0;
+		
+		int[] timeSection = {0 ,12 ,18 ,24 };
+		int hour;
 		String[] FirstDayAndLast = DateUtil.getMonthFirstAndLastDate(currentDate);
 		Cursor cursor = null;
-
-		cursor = db.rawQuery("select strftime('%H',date)  from habit  where date between ? and ? ",
-						FirstDayAndLast);
+		
+			cursor = db.rawQuery("select strftime('%H',date)  from habit  where   date between ? and ? ",
+							FirstDayAndLast); 
 		if (cursor.moveToFirst())
 		{
 			for (int i = 0; i < cursor.getCount(); i++)
 			{
 				hour = Integer.parseInt(cursor.getString(0));
 				if (timeSection[0] <= hour && hour < timeSection[1])
-					partTimeOfDrinktimesOfMonth[0]++;
+					timeSectionOfDrinktimesOfMonth[0]++;
 				else if (timeSection[1] <= hour && hour < timeSection[2])
-					partTimeOfDrinktimesOfMonth[1]++;
+					timeSectionOfDrinktimesOfMonth[1]++;
 				else
-					partTimeOfDrinktimesOfMonth[2]++;
+					timeSectionOfDrinktimesOfMonth[2]++;
 				cursor.moveToNext();
 			}
 		}
-
+		
 		if (!cursor.isClosed())
 			cursor.close();
-		return partTimeOfDrinktimesOfMonth;
+		return timeSectionOfDrinktimesOfMonth;
+	}
+	
+	
+	/**
+	 * @param currentDat 当前日期时间
+	 * @return 返回月最长保持不喝饮料天数longestKeepingDayOfMonth
+	 */
+	public int getLongestKeepingDayOfMonth(Date currentDate)
+	{
+		int longestKeepingDayOfMonth = 0;
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] FirstDayAndLast = DateUtil.getMonthFirstAndLastDate(currentDate);
+		Cursor cursor = null;
+		
+		SharedPreferences  setting =ctx.getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
+		String firstDay = setting.getString("firstDay", "");
+		
+		cursor = db.rawQuery("select strftime('%d',date) from habit  where   date between ? and ? ",
+						FirstDayAndLast); 
+		if (cursor.moveToFirst())
+		{
+			int lastRecordDate = 0;
+			int thisRecordDate = 0;
+			for (int i = 0; i < cursor.getCount(); i++)
+			{
+				thisRecordDate = Integer.parseInt(cursor.getString(0));
+				LogUtil.d("lin",thisRecordDate+"");
+				longestKeepingDayOfMonth = (thisRecordDate - lastRecordDate - 1) > longestKeepingDayOfMonth ? (thisRecordDate - lastRecordDate - 1) : longestKeepingDayOfMonth;
+				lastRecordDate = thisRecordDate;
+				cursor.moveToNext();
+			}
+		}
+      else//如果本月无纪录
+		{
+			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
+					.getMonth())//本月安装
+				longestKeepingDayOfMonth = Integer.parseInt(DateUtil
+						.daysBetween(DateUtil.StringToDate(firstDay),
+								currentDate));
+			else
+				longestKeepingDayOfMonth = Integer.parseInt(DateUtil
+						.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
+								currentDate));
+
+		}
+	
+	if (!cursor.isClosed())
+		cursor.close();
+		
+		return longestKeepingDayOfMonth; 
 	}
 	
 }

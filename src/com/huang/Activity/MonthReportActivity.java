@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.TextView;
 
-public class MonthReportActivity extends Activity
+public class MonthReportActivity extends Activity 
 {
 	DatabaseHelper databaseHelper;
 	Calendar calendar = Calendar.getInstance();
@@ -25,9 +25,9 @@ public class MonthReportActivity extends Activity
 	TextView mostDrinkTimesOfMonthTextView; // 月最多瓶数
 	int mostDrinkTimesOfMonth = 0;
 	
-	TextView amDrinkTimesOfMonthTextView;//00:00--12:00
-	TextView pmDrinkTimesOfMonthTextView;//12:00--18:00
-	TextView eveningDrinkTimesOfMonthTextView;//18:00--24:00
+	TextView amDrinkTimesOfMonthTextView;//4:00--12:00
+	TextView pmDrinkTimesOfMonthTextView;//12:00--20:00
+	TextView eveningDrinkTimesOfMonthTextView;//20:00--4:00
 	int partTimeOfDrinktimesOfMonth[]=new int[3];
 	
 	
@@ -56,7 +56,7 @@ public class MonthReportActivity extends Activity
 		mostDrinkTimesOfMonthTextView = (TextView) findViewById(R.id.mostDrinkTimesOfMonth_textview);
 		mostDrinkTimesOfMonthTextView.setText("本月最多喝" + mostDrinkTimesOfMonth + "瓶");
 		
-		partTimeOfDrinktimesOfMonth = databaseHelper.getPartTimeOfDrinktimesOfMonth(calendar.getTime());
+		partTimeOfDrinktimesOfMonth = databaseHelper.getTimeSectionOfDrinktimesOfMonth(calendar.getTime());
 		amDrinkTimesOfMonthTextView = (TextView) findViewById(R.id.amDrinkTimesOfMonth_textview);
 		amDrinkTimesOfMonthTextView.setText("本月上午共喝"+partTimeOfDrinktimesOfMonth[0]+"瓶");
 		pmDrinkTimesOfMonthTextView = (TextView) findViewById(R.id.pmDrinkTimesOfMonth_textview);
@@ -65,6 +65,8 @@ public class MonthReportActivity extends Activity
 		eveningDrinkTimesOfMonthTextView.setText("本月夜间共喝"+partTimeOfDrinktimesOfMonth[2]+"瓶");
 		
 		longestKeepingDayOfMonthTextView = (TextView) findViewById(R.id.longestKeepingDayOfMonth_textview);
-	}
+		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(calendar.getTime());
+		longestKeepingDayOfMonthTextView.setText("本月最长保持纪录为"+longestKeepingDayOfMonth+"天"); 
+	} 
 
 }
