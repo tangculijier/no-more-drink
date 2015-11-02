@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green_normal"
+    >
+
+        <Button
+            android:id="@+id/begin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="50dp"
+            android:gravity="center_horizontal"
+            android:text="@string/viewpage.second.button"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/viewpage_second_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            android:text="@string/viewpage.second.title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/white"
+            android:textStyle="bold" 
+            android:textSize="@dimen/font_headline"
+            android:drawableLeft="@drawable/balance"
+            android:gravity="bottom"
+            />
+
+        
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/viewpage_second_title"
+            android:paddingTop="3dp"
+            android:layout_centerHorizontal="true"
+            android:text="@string/viewpage.second.headline"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/white"
+            android:textStyle="bold" 
+            android:textSize="@dimen/font_headline"
+            />
+
+             
+             <TextView
+                  	android:id="@+id/plus_text"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:text="+"
+		            android:textAppearance="?android:attr/textAppearanceLarge"
+		            android:textColor="@color/white"
+		            android:textStyle="bold" 
+		            android:textSize="@dimen/font_title"
+		            android:layout_centerInParent="true"
+		            android:padding="15dp"
+		            android:gravity="top"
+         			 />
+
+             <ImageView
+                 android:id="@+id/man"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignTop="@+id/plus_text"
+                 android:layout_toLeftOf="@+id/plus_text"
+                 android:src="@drawable/you1"
+                  />
+
+             <ImageView
+                 android:id="@+id/drink"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignTop="@+id/plus_text"
+                 android:layout_toRightOf="@+id/plus_text"
+                 android:src="@drawable/viewpage_drink" 
+                 />
+
+             <ImageView
+                 android:id="@+id/blance_example"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_below="@+id/plus_text"
+                 android:padding="10dp"
+                 android:layout_centerHorizontal="true"
+                 android:src="@drawable/balance" 
+                 />
+             
+             <ImageView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:padding="10dp"
+                 android:layout_alignTop="@+id/blance_example"
+                 android:layout_toLeftOf="@+id/blance_example"
+                 android:src="@drawable/balance" 
+                 />
+             
+               <ImageView
+                 android:id="@+id/blance_example2"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:padding="10dp"
+                 android:layout_alignTop="@+id/blance_example"
+                 android:layout_toRightOf="@+id/blance_example"
+                 android:src="@drawable/balance"
+                  />
+             
+
+</RelativeLayout>

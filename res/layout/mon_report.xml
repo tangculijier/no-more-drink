@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+  
+
+            <TextView
+                android:id="@+id/monthSumOfDrinkTimes_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report.text.monthSumOfDrinkTimes" />
+     
+
+            <TextView
+                android:id="@+id/longestKeepingDayOfMonth_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report.text.longestKeepingDayOfMonth"/>
+
+  
+
+            <TextView
+                android:id="@+id/mostDrinkTimesOfMonth_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report.text.mostDrinkTimesOfMonth" />
+            
+            
+            <TextView
+                android:id="@+id/amDrinkTimesOfMonth_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report.text.amDrinkTimesOfMonth" />
+            
+            
+            <TextView
+                android:id="@+id/pmDrinkTimesOfMonth_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report.text.pmDrinkTimesOfMonth" />
+            
+            <TextView
+                android:id="@+id/eveningDrinkTimesOfMonth_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report.text.eveningDrinkTimesOfMonth" />
+
+</LinearLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- activity -->
+    <string name="app_name">不喝饮料</string>
+    <string name="title.first">不喝饮料已保持</string>
+    <string name="action_settings">Settings</string>
+    <string name="button.text.drink">喝了一瓶饮料</string>
+    <string name="button.text.letitgo">放我一马</string>
+    <string name="title.keeptime">%s 天</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="welcomeActivity.begin">同意</string>
+	<string name="balance.dialog.title">自觉值计算方式</string>
+	
+	<!-- MonthReportActivity -->
+	 <string name="report.text.monthSumOfDrinkTimes">月总量0瓶</string>
+    <string name="report.text.mostDrinkTimesOfMonth">月最多瓶数0瓶</string>
+	<string name="report.text.longestKeepingDayOfMonth">最长保持纪录0天</string>
+	<string name="report.text.amDrinkTimesOfMonth">4:00——12:00月总量0瓶</string>
+    <string name="report.text.pmDrinkTimesOfMonth">12:00——20:00月总量0瓶</string>
+	<string name="report.text.eveningDrinkTimesOfMonth">20:00——4:00月总量0瓶</string>
+	
+	
+	<!-- viewpage -->
+	<string name="viewpage.first.title">远离饮料</string>
+	<string name="viewpage.first.note">帮你克制生活中的陋习\n「喝饮料」</string>
+		<string name="viewpage.second.title">「自觉值」</string>
+		<string name="viewpage.second.headline">用来衡量你的表现</string>
+		<string name="viewpage.second.button">Go</string>
+</resources>

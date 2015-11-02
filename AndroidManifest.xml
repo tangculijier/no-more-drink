@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.huang.nodrinkmore"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="17"
+        android:targetSdkVersion="19" />
+    
+	<uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />  
+	<uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+	
+	
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        
+         <activity
+            android:name="com.huang.Activity.WelcomeActivity"
+            android:label="@string/app_name" >
+            
+              <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.huang.Activity.MainActivity"
+            android:label="@string/app_name" >
+          
+        </activity>
+        <activity
+            android:name="com.huang.Activity.MonthReportActivity" 
+            android:label="@string/app_name" >
+          
+        </activity>
+        
+        <service android:name="com.huang.service.ForeService"></service>
+       
+    </application>
+
+</manifest>
