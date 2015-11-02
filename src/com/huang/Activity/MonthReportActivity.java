@@ -39,7 +39,7 @@ public class MonthReportActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// to title
-		setContentView(R.layout.mon_report);
+		setContentView(R.layout.month_report);
 		init();
 
 	}
