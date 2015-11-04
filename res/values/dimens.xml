@@ -7,4 +7,5 @@
     <!-- font sizes -->
     <dimen name="font_title">34sp</dimen>
         <dimen name="font_headline">24sp</dimen>
+         <dimen name="font_sub_headline">18sp</dimen>
 </resources>

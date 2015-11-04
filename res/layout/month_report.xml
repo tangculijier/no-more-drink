@@ -4,48 +4,85 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-  
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                >
+                
+                
+                
+	          	<LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical"
+	                android:divider="@drawable/my_divider"
+	                android:padding="10dp" 
+	                android:showDividers="end"
+	                android:gravity="center"
+	                >
+	                
+	                <TextView
+	                    
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="2015/10/01 ~ 2015/10/09"
+	                    android:textSize="@dimen/font_headline" />
+	                </LinearLayout>
+	                
+	          	
+	          	
+	                <LinearLayout
+		                android:layout_width="match_parent"
+		                android:layout_height="wrap_content"
+		                android:orientation="vertical"
+		                android:padding="10dp" 
+		                android:gravity="center"
+		                >
+		                
+		                <TextView
+		                    
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                    android:text="坚持月报"
+		                    android:textSize="@dimen/font_title" />
+		                </LinearLayout>
+		                
+	                
+	          	    <LinearLayout
+			                android:layout_width="match_parent"
+			                android:layout_height="wrap_content"
+			                android:orientation="horizontal"
+			                android:padding="10dp" 
+			                android:gravity="center"
+			                >
+				        <TextView
+				            style ="@style/textSubheadlineTheme"
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                    android:text="自觉天数\n15 天" />
+		                <TextView
+		                    style ="@style/textSubheadlineTheme"
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                   
+		                    android:text="@string/report.text.monthSumOfDrinkTimes" />
+		
+		                <TextView
+		                    style ="@style/textSubheadlineTheme"
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                    android:text="@string/report.text.longestKeepingDayOfMonth" />
+		
+                </LinearLayout>
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/monthSumOfDrinkTimes_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/report.text.monthSumOfDrinkTimes" />
-     
-
-            <TextView
-                android:id="@+id/longestKeepingDayOfMonth_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/report.text.longestKeepingDayOfMonth"/>
-
-  
-
-            <TextView
-                android:id="@+id/mostDrinkTimesOfMonth_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/report.text.mostDrinkTimesOfMonth" />
-            
-            
-            <TextView
-                android:id="@+id/amDrinkTimesOfMonth_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/report.text.amDrinkTimesOfMonth" />
-            
-            
-            <TextView
-                android:id="@+id/pmDrinkTimesOfMonth_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/report.text.pmDrinkTimesOfMonth" />
-            
-            <TextView
-                android:id="@+id/eveningDrinkTimesOfMonth_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/report.text.eveningDrinkTimesOfMonth" />
-            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+            </LinearLayout>
 
 </LinearLayout>

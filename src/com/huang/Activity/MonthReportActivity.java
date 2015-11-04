@@ -22,7 +22,6 @@ public class MonthReportActivity extends Activity
 	TextView longestKeepingDayOfMonthTextView; // 最长保持纪录
 	int longestKeepingDayOfMonth = 0;
 	
-	TextView mostDrinkTimesOfMonthTextView; // 月最多瓶数
 	int mostDrinkTimesOfMonth = 0;
 	
 	TextView amDrinkTimesOfMonthTextView;//4:00--12:00
@@ -49,24 +48,7 @@ public class MonthReportActivity extends Activity
 		databaseHelper = new DatabaseHelper(this);
 		
 		monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(calendar.getTime());
-		monthSumOfDrinkTimesTextView = (TextView) findViewById(R.id.monthSumOfDrinkTimes_textview);
-		monthSumOfDrinkTimesTextView.setText("本月共喝" + monthSumOfDrinkTimes + "瓶");
-		
-		mostDrinkTimesOfMonth = databaseHelper.getMostDrinkTimesOfMonth(calendar.getTime());
-		mostDrinkTimesOfMonthTextView = (TextView) findViewById(R.id.mostDrinkTimesOfMonth_textview);
-		mostDrinkTimesOfMonthTextView.setText("本月最多喝" + mostDrinkTimesOfMonth + "瓶");
-		
-		partTimeOfDrinktimesOfMonth = databaseHelper.getTimeSectionOfDrinktimesOfMonth(calendar.getTime());
-		amDrinkTimesOfMonthTextView = (TextView) findViewById(R.id.amDrinkTimesOfMonth_textview);
-		amDrinkTimesOfMonthTextView.setText("本月上午共喝"+partTimeOfDrinktimesOfMonth[0]+"瓶");
-		pmDrinkTimesOfMonthTextView = (TextView) findViewById(R.id.pmDrinkTimesOfMonth_textview);
-		pmDrinkTimesOfMonthTextView.setText("本月下午共喝"+partTimeOfDrinktimesOfMonth[1]+"瓶");
-		eveningDrinkTimesOfMonthTextView = (TextView) findViewById(R.id.eveningDrinkTimesOfMonth_textview);
-		eveningDrinkTimesOfMonthTextView.setText("本月夜间共喝"+partTimeOfDrinktimesOfMonth[2]+"瓶");
-		
-		longestKeepingDayOfMonthTextView = (TextView) findViewById(R.id.longestKeepingDayOfMonth_textview);
 		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(calendar.getTime());
-		longestKeepingDayOfMonthTextView.setText("本月最长保持纪录为"+longestKeepingDayOfMonth+"天"); 
 	} 
 
 }
