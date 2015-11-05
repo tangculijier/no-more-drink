@@ -3,6 +3,9 @@
     <color name="cal_date_foreground">#F5F7F9</color>
     <color name="green_light">#81C784</color>
     <color name="green_normal">#51A387</color>
+    <color name="green_light_more">#8BC34A</color>
     <color name="white">#FFFFFF</color>
     <color name="blue">#379BFF</color>
+     <color name="grey">#666666</color>
+          
 </resources>

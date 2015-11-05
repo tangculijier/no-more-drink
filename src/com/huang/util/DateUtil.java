@@ -101,14 +101,13 @@ public class DateUtil
 	}
 	
 	/**
-	 * @return 返回本月期间 
-	 * eg：输入 2015.11.15
-	 * 返回2015/11/01~2015/11/15
+	 * @param currentDate 当前时间 example : 2015.11.15
+	 * @return 返回本月期间 example: 2015/11/01~2015/11/15
 	 */
 	
 	public static String getDateDuration(Date currentDate)
 	{
-		String  dateDuration;
+		String dateDuration ="";
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(currentDate);
 		cal.set(Calendar.DAY_OF_MONTH, 1);

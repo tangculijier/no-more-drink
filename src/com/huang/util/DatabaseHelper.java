@@ -312,16 +312,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	 * @param time
 	 * @return
 	 */
-	public int getConscienceDays(Date currentDate)
+	public int getNoDrinkDaysNumber(Date currentDate)
 	{
 		int conscienceDays = 0;
 		SQLiteDatabase db = this.getReadableDatabase();
-		String[] FirstDayAndLast = DateUtil
-				.getMonthFirstAndLastDate(currentDate);
-		Cursor cursor = db
-				.rawQuery(
-						"select COUNT(date) from habit  where date between ? and ? group by DATE(date) ",
-						FirstDayAndLast); 
+		String[] FirstDayAndLast = DateUtil.getMonthFirstAndLastDate(currentDate);
+		Cursor cursor = db.rawQuery("select COUNT(date) from habit  where date between ? and ? group by DATE(date) ",FirstDayAndLast); 
 		// select result
 		if (cursor.moveToFirst())
 		{
