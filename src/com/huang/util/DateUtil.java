@@ -99,4 +99,22 @@ public class DateUtil
 		res[1] =DateToStringNoHour(last) + " 23:59:59";
 		return res;
 	}
+	
+	/**
+	 * @return 返回本月期间 
+	 * eg：输入 2015.11.15
+	 * 返回2015/11/01~2015/11/15
+	 */
+	
+	public static String getDateDuration(Date currentDate)
+	{
+		String  dateDuration;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currentDate);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		Date first = cal.getTime();
+		dateDuration = DateToStringNoHour(first) + "~" + DateToStringNoHour(currentDate);
+		dateDuration.replace('.', '/');
+		return dateDuration;
+	}
 }

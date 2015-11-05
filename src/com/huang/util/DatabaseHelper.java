@@ -307,4 +307,34 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		return longestKeepingDayOfMonth; 
 	}
 	
+	
+	/**
+	 * @param time
+	 * @return
+	 */
+	public int getConscienceDays(Date currentDate)
+	{
+		int conscienceDays = 0;
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] FirstDayAndLast = DateUtil
+				.getMonthFirstAndLastDate(currentDate);
+		Cursor cursor = db
+				.rawQuery(
+						"select COUNT(date) from habit  where date between ? and ? group by DATE(date) ",
+						FirstDayAndLast); 
+		// select result
+		if (cursor.moveToFirst())
+		{
+			conscienceDays = Integer.parseInt(DateUtil
+					.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
+							currentDate)) - cursor.getInt(0);
+		}
+		if (!cursor.isClosed())
+			cursor.close();
+		return conscienceDays;
+	}
+	
+	
+	
+	
 }

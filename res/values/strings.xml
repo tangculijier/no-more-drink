@@ -13,8 +13,11 @@
 	<string name="balance.dialog.title">自觉值计算方式</string>
 	
 	<!-- MonthReportActivity -->
-	 <string name="report.text.monthSumOfDrinkTimes">饮用总量\n16 次</string>
-	<string name="report.text.longestKeepingDayOfMonth">最长坚持\n0 天</string>
+	<string name="report.text.dateDuration">%s</string>
+	<string name="report.text.consistMonthReport">坚持月报</string>
+	<string name="report.text.conscienceDays">自觉天数\n%s 天</string>
+	<string name="report.text.monthSumOfDrinkTimes">饮用总量\n%s 次</string>
+	<string name="report.text.longestKeepingDayOfMonth">最长坚持\n%s 天</string>
 	<string name="report.text.amDrinkTimesOfMonth">4:00——12:00月总量0瓶</string>
     <string name="report.text.pmDrinkTimesOfMonth">12:00——20:00月总量0瓶</string>
 	<string name="report.text.eveningDrinkTimesOfMonth">20:00——4:00月总量0瓶</string>

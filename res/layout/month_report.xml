@@ -24,10 +24,10 @@
 	                >
 	                
 	                <TextView
-	                    
+	                    android:id="@+id/dateDuration"
 	                    android:layout_width="wrap_content"
 	                    android:layout_height="wrap_content"
-	                    android:text="2015/10/01 ~ 2015/10/09"
+	                    android:text="@string/report.text.dateDuration" 
 	                    android:textSize="@dimen/font_headline" />
 	                </LinearLayout>
 	                
@@ -45,7 +45,7 @@
 		                    
 		                    android:layout_width="wrap_content"
 		                    android:layout_height="wrap_content"
-		                    android:text="坚持月报"
+		                    android:text="@string/report.text.consistMonthReport" 
 		                    android:textSize="@dimen/font_title" />
 		                </LinearLayout>
 		                
@@ -59,23 +59,25 @@
 			                >
 				        <TextView
 				            style ="@style/textSubheadlineTheme"
+				            android:id="@+id/conscienceDays"
 		                    android:layout_width="wrap_content"
 		                    android:layout_height="wrap_content"
-		                    android:text="自觉天数\n15 天" />
+		                    android:text="@string/report.text.conscienceDays" />
 		                <TextView
 		                    style ="@style/textSubheadlineTheme"
+		                    android:id="@+id/monthSumOfDrinkTimes"
 		                    android:layout_width="wrap_content"
 		                    android:layout_height="wrap_content"
-		                   
 		                    android:text="@string/report.text.monthSumOfDrinkTimes" />
 		
 		                <TextView
 		                    style ="@style/textSubheadlineTheme"
+		                    android:id="@+id/longestKeepingDayOfMonth"
 		                    android:layout_width="wrap_content"
 		                    android:layout_height="wrap_content"
 		                    android:text="@string/report.text.longestKeepingDayOfMonth" />
 		
-                </LinearLayout>
+                </LinearLayout> 
             </LinearLayout>
 
             <LinearLayout
