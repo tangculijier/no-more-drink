@@ -18,30 +18,44 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/balanceLinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp" 
-                android:gravity="right">
+                >
 
                 <ImageView
-                    android:id="@+id/balanceImage"
+                    android:id="@+id/analytics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/balance" />
+                    android:src="@drawable/analytics" 
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    />
 
                 <TextView
                     android:id="@+id/balance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:padding="5dp"
-                    android:text="3"
+                    android:text="5"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
-            </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/balanceImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/balance"
+                    android:padding="5dp"
+                    android:src="@drawable/balance" />
+
+            </RelativeLayout>
 
               <RelativeLayout
                 android:layout_width="match_parent"

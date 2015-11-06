@@ -53,7 +53,10 @@ public class MainActivity extends ActionBarActivity
 	 */
 	CalendarView calendar;
 
-	LinearLayout balanceLinearLayout;
+	/**
+	 * 月报分析按钮
+	 */
+	ImageView analyticsImage;
 	/**
 	 * 自觉值图片--向日葵
 	 */
@@ -109,7 +112,7 @@ public class MainActivity extends ActionBarActivity
 	public void init()
 	{
 		calendar = (CalendarView)findViewById(R.id.calendar);
-		balanceLinearLayout = (LinearLayout)findViewById(R.id.balanceLinearLayout);
+		analyticsImage = (ImageView)findViewById(R.id.analytics);
 		balanceImage = (ImageView)findViewById(R.id.balanceImage);
 		balanceText = (TextView)findViewById(R.id.balance);
 		face = (ImageView)findViewById(R.id.face);
@@ -141,13 +144,12 @@ public class MainActivity extends ActionBarActivity
 			}
 		});
 		
-		face.setOnClickListener(new OnClickListener()
+		analyticsImage.setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
-				Intent intent = new Intent(MainActivity.this,
-						MonthReportActivity.class);
+				Intent intent = new Intent(MainActivity.this,MonthReportActivity.class);
 				startActivity(intent);
 			}
 		});
