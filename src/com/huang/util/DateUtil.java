@@ -101,7 +101,7 @@ public class DateUtil
 	}
 	
 	/**
-	 * @param currentDate 当前时间 example : 2015.11.15
+	 * @param currentDate 当前时间 example : 2015-11-15
 	 * @return 返回本月期间 example: 2015/11/01~2015/11/15
 	 */
 	
@@ -110,10 +110,9 @@ public class DateUtil
 		String dateDuration ="";
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(currentDate);
-		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.DAY_OF_MONTH, 1); 
 		Date first = cal.getTime();
 		dateDuration = DateToStringNoHour(first) + "~" + DateToStringNoHour(currentDate);
-		dateDuration.replace('.', '/');
-		return dateDuration;
+		return dateDuration.replaceAll("-", "/");
 	}
 }

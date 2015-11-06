@@ -276,7 +276,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
 						FirstDayAndLast); 
 		if (cursor.moveToFirst())
 		{
-			int lastRecordDate = 0;
+			int lastRecordDate;
+			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
+					.getMonth())//本月安装
+				lastRecordDate = Integer.parseInt(DateUtil
+						.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
+								DateUtil.StringToDate(firstDay)));
+			else
+				lastRecordDate = 0;
 			int thisRecordDate = 0;
 			for (int i = 0; i < cursor.getCount(); i++)
 			{
@@ -309,21 +316,41 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	
 	/**
-	 * @param time
-	 * @return
+	 * @param time 当前日期
+	 * @return 本月没喝饮料的自觉天数
 	 */
 	public int getNoDrinkDaysNumber(Date currentDate)
 	{
 		int conscienceDays = 0;
 		SQLiteDatabase db = this.getReadableDatabase();
+		SharedPreferences  setting =ctx.getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
+		String firstDay = setting.getString("firstDay", "");
 		String[] FirstDayAndLast = DateUtil.getMonthFirstAndLastDate(currentDate);
-		Cursor cursor = db.rawQuery("select COUNT(date) from habit  where date between ? and ? group by DATE(date) ",FirstDayAndLast); 
+		Cursor cursor = db.rawQuery("select  COUNT(*) from (select  COUNT(DATE(date)) from habit  where date between ? and ? group by DATE(date)) ",FirstDayAndLast); 
 		// select result
-		if (cursor.moveToFirst())
+		if (cursor.moveToFirst()) 
 		{
-			conscienceDays = Integer.parseInt(DateUtil
+			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
+					.getMonth())//本月安装
+				conscienceDays = Integer.parseInt(DateUtil
+						.daysBetween(DateUtil.StringToDate(firstDay),
+								currentDate)) - Integer.parseInt(cursor.getString(0))+1;
+			else
+				conscienceDays = Integer.parseInt(DateUtil
 					.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
-							currentDate)) - cursor.getInt(0);
+							currentDate)) - Integer.parseInt(cursor.getString(0))+1;
+		} else//如果本月无纪录
+		{
+			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
+					.getMonth())//本月安装
+				conscienceDays = Integer.parseInt(DateUtil
+						.daysBetween(DateUtil.StringToDate(firstDay),
+								currentDate))+1;
+			else
+				conscienceDays = Integer.parseInt(DateUtil
+						.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
+								currentDate))+1;
+
 		}
 		if (!cursor.isClosed())
 			cursor.close();
