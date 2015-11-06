@@ -7,8 +7,15 @@ import java.util.Date;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -21,6 +28,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.huang.nodrinkmore.R;
 import com.huang.util.DatabaseHelper;
 import com.huang.util.DateUtil;
@@ -38,7 +46,8 @@ public class MonthReportActivity extends Activity implements
 	TextView dateDurationTextView;  
 	String dateDuration;
 
-	TextView noDrinkDaysTextView; // 
+	LinearLayout noDrinkDaysLayout;
+	TextView noDrinkDaysTextView;  
 	/**
 	 * 自觉天数(没有喝饮料的天数)
 	 */
@@ -77,9 +86,10 @@ public class MonthReportActivity extends Activity implements
 
 	public void init()
 	{
+		noDrinkDaysLayout = (LinearLayout)findViewById(R.id.noDrinkDaysLayout);
 		dateDurationTextView = (TextView) findViewById(R.id.dateDuration);
 		noDrinkDaysTextView = (TextView) findViewById(R.id.noDrinkDays);
-		monthSumOfDrinkTimesTextView = (TextView) findViewById(R.id.monthSumOfDrinkTimes);
+		//monthSumOfDrinkTimesTextView = (TextView) findViewById(R.id.monthSumOfDrinkTimes);
 		longestKeepingDayOfMonthTextView = (TextView) findViewById(R.id.longestKeepingDayOfMonth);
 		mChart = (PieChart) findViewById(R.id.pie_chart);
 
@@ -96,9 +106,17 @@ public class MonthReportActivity extends Activity implements
 
 		tempText = noDrinkDaysTextView.getText().toString().replace("%s", noDrinkDays + "");
 		noDrinkDaysTextView.setText(tempText);
-
-		tempText = monthSumOfDrinkTimesTextView.getText().toString().replace("%s", monthSumOfDrinkTimes + "");
-		monthSumOfDrinkTimesTextView.setText(tempText);
+		
+		//用程序来控制 给几个大红花
+		for(int i = 0 ;i < 3; i++)
+		{
+			ImageView image = new ImageView(this);
+			image.setBackgroundResource(R.drawable.balance_32);
+			noDrinkDaysLayout.addView(image);
+		}
+	
+		//tempText = monthSumOfDrinkTimesTextView.getText().toString().replace("%s", monthSumOfDrinkTimes + "");
+		//monthSumOfDrinkTimesTextView.setText(tempText);
 
 		tempText = longestKeepingDayOfMonthTextView.getText().toString().replace("%s", longestKeepingDayOfMonth + "");
 		longestKeepingDayOfMonthTextView.setText(tempText);
@@ -121,7 +139,8 @@ public class MonthReportActivity extends Activity implements
 		tf = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 		mChart.setCenterTextTypeface(Typeface.createFromAsset(getAssets(),"OpenSans-Light.ttf"));
 		mChart.setDrawHoleEnabled(true);// 是否有中间掏空的圆
-		mChart.setCenterText("喝饮料时间分布");
+		mChart.setCenterText(generateCenterSpannableText());
+		mChart.setCenterTextSize(12f);
 		mChart.setRotationAngle(270);// 从最中间开始动画
 		mChart.setRotationEnabled(true);// 可以手动旋转
 		mChart.setOnChartValueSelectedListener(this);
@@ -130,7 +149,22 @@ public class MonthReportActivity extends Activity implements
 		
 		
 	}
+	  private SpannableString generateCenterSpannableText() {
 
+		  	String text = "喝饮料时间分布\n饮用总量 "+monthSumOfDrinkTimes+"瓶";
+		  	int x = 7;
+		  	int y = 7;
+	        SpannableString spannableString = new SpannableString(text);
+	        spannableString.setSpan(new RelativeSizeSpan(1.7f), 0, x, 0);
+	        spannableString.setSpan(new StyleSpan(Typeface.NORMAL), x, spannableString.length() - y, 0);
+	        spannableString.setSpan(new ForegroundColorSpan(Color.GRAY), x, spannableString.length() - y, 0);
+	        spannableString.setSpan(new RelativeSizeSpan(.8f), x, spannableString.length() - y, 0);
+	        spannableString.setSpan(new StyleSpan(Typeface.ITALIC), spannableString.length() - x, spannableString.length(), 0);
+	        spannableString.setSpan(new ForegroundColorSpan(ColorTemplate.getHoloBlue()), spannableString.length() - x, spannableString.length(), 0);
+	        return spannableString;
+	    }
+	
+	
 	private void initData()
 	{
 

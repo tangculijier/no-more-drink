@@ -53,30 +53,40 @@
 	          	    <LinearLayout
 			                android:layout_width="match_parent"
 			                android:layout_height="wrap_content"
-			                android:orientation="horizontal"
+			                android:orientation="vertical"
 			                android:padding="10dp" 
-			                android:gravity="center"
+			                android:gravity="left"
 			                >
-				        <TextView
-				            style ="@style/textSubheadlineTheme"
-				            android:id="@+id/noDrinkDays"
-		                    android:layout_width="wrap_content"
-		                    android:layout_height="wrap_content"
-		                    android:text="@string/report.text.conscienceDays" />
-		                <TextView
-		                    style ="@style/textSubheadlineTheme"
-		                    android:id="@+id/monthSumOfDrinkTimes"
-		                    android:layout_width="wrap_content"
-		                    android:layout_height="wrap_content"
-		                    android:text="@string/report.text.monthSumOfDrinkTimes" />
+			                 <LinearLayout
+			                    android:id="@+id/noDrinkDaysLayout"
+				                android:layout_width="match_parent"
+				                android:layout_height="wrap_content"
+				                android:orientation="horizontal"
+				                >
+						        <TextView
+						            style ="@style/textSubheadlineTheme"
+						            android:id="@+id/noDrinkDays"
+				                    android:layout_width="wrap_content"
+				                    android:layout_height="wrap_content"
+				                    android:text="@string/report.text.conscienceDays"
+				                    android:paddingRight="5dp"
+				                    android:gravity="center_vertical"
+				                    />
+					        </LinearLayout>
+		                
 		
-		                <TextView
-		                    style ="@style/textSubheadlineTheme"
-		                    android:id="@+id/longestKeepingDayOfMonth"
-		                    android:layout_width="wrap_content"
-		                    android:layout_height="wrap_content"
-		                    android:text="@string/report.text.longestKeepingDayOfMonth" />
-		
+			                  <LinearLayout
+				                android:layout_width="match_parent"
+				                android:layout_height="wrap_content"
+				                android:orientation="horizontal"
+				                >
+				                <TextView
+				                    style ="@style/textSubheadlineTheme"
+				                    android:id="@+id/longestKeepingDayOfMonth"
+				                    android:layout_width="wrap_content"
+				                    android:layout_height="wrap_content"
+				                    android:text="@string/report.text.longestKeepingDayOfMonth" />
+							 </LinearLayout>
                 </LinearLayout> 
             </LinearLayout>
 
