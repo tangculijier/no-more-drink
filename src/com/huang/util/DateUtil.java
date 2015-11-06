@@ -102,7 +102,7 @@ public class DateUtil
 	
 	/**
 	 * @param currentDate 当前时间 example : 2015-11-15
-	 * @return 返回本月期间 example: 2015/11/01~2015/11/15
+	 * @return 返回本月期间 example: 2015/11/01 ~ 2015/11/15
 	 */
 	
 	public static String getDateDuration(Date currentDate)
@@ -112,7 +112,41 @@ public class DateUtil
 		cal.setTime(currentDate);
 		cal.set(Calendar.DAY_OF_MONTH, 1); 
 		Date first = cal.getTime();
-		dateDuration = DateToStringNoHour(first) + "~" + DateToStringNoHour(currentDate);
+		dateDuration = DateToStringNoHour(first) + " ~ " + DateToStringNoHour(currentDate);
 		return dateDuration.replaceAll("-", "/");
+	}
+	
+	
+	/**
+	 * @param 日期1 日期2
+	 * @return 是否是相同的年份和月份
+	 */
+	
+	public static boolean isSameMonth(Date date1,Date date2)
+	{
+		Calendar cal1 = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
+		cal1.setTime(date1);
+		cal2.setTime(date2);
+		int year1 = cal1.get(Calendar.YEAR); 
+		int year2 = cal2.get(Calendar.YEAR); 
+		boolean isSameYear = year1 == year2 ? true : false;
+		
+		int month1 = cal1.get(Calendar.MONTH) + 1; 
+		int month2 = cal2.get(Calendar.MONTH) + 1; 
+		
+		boolean isSameMonth = month1 == month2 ? true : false;
+		return isSameYear && isSameMonth;
+	}
+	
+	/**
+	 * @param 当前时间
+	 * @return 第几天（在当前月份中）
+	 */
+	public static int getDateIndexInMonth(Date date)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return  cal.get(Calendar.DAY_OF_MONTH);
 	}
 }

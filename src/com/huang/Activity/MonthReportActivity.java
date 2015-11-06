@@ -13,8 +13,10 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -46,7 +48,6 @@ public class MonthReportActivity extends Activity implements
 	TextView dateDurationTextView;  
 	String dateDuration;
 
-	LinearLayout noDrinkDaysLayout;
 	TextView noDrinkDaysTextView;  
 	/**
 	 * 自觉天数(没有喝饮料的天数)
@@ -86,7 +87,6 @@ public class MonthReportActivity extends Activity implements
 
 	public void init()
 	{
-		noDrinkDaysLayout = (LinearLayout)findViewById(R.id.noDrinkDaysLayout);
 		dateDurationTextView = (TextView) findViewById(R.id.dateDuration);
 		noDrinkDaysTextView = (TextView) findViewById(R.id.noDrinkDays);
 		//monthSumOfDrinkTimesTextView = (TextView) findViewById(R.id.monthSumOfDrinkTimes);
@@ -106,18 +106,7 @@ public class MonthReportActivity extends Activity implements
 
 		tempText = noDrinkDaysTextView.getText().toString().replace("%s", noDrinkDays + "");
 		noDrinkDaysTextView.setText(tempText);
-		
-		//用程序来控制 给几个大红花
-		for(int i = 0 ;i < 3; i++)
-		{
-			ImageView image = new ImageView(this);
-			image.setBackgroundResource(R.drawable.balance_32);
-			noDrinkDaysLayout.addView(image);
-		}
-	
-		//tempText = monthSumOfDrinkTimesTextView.getText().toString().replace("%s", monthSumOfDrinkTimes + "");
-		//monthSumOfDrinkTimesTextView.setText(tempText);
-
+			
 		tempText = longestKeepingDayOfMonthTextView.getText().toString().replace("%s", longestKeepingDayOfMonth + "");
 		longestKeepingDayOfMonthTextView.setText(tempText);
 

@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.github.mikephil.charting.utils.Utils;
 import com.huang.model.Habit;
 /**
  * 操纵sqlite的工具类
@@ -206,9 +207,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		SQLiteDatabase db = this.getReadableDatabase();
 		String[] FirstDayAndLast = DateUtil
 				.getMonthFirstAndLastDate(currentDate);
-		Cursor cursor = db
-				.rawQuery(
-						"select COUNT(id) from habit  where date between ? and ? group by DATE(date) order by COUNT(id) DESC",
+		Cursor cursor = db.rawQuery("select COUNT(id) from habit  where date between ? and ? group by DATE(date) order by COUNT(id) DESC",
 						FirstDayAndLast); 
 		// select result
 		if (cursor.moveToFirst())
@@ -260,52 +259,37 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	/**
 	 * @param currentDat 当前日期时间
-	 * @return 返回月最长保持不喝饮料天数longestKeepingDayOfMonth
+	 * @return 返回月最长保持不喝饮料天数
 	 */
 	public int getLongestKeepingDayOfMonth(Date currentDate)
 	{
+		
 		int longestKeepingDayOfMonth = 0;
 		SQLiteDatabase db = this.getReadableDatabase();
 		String[] FirstDayAndLast = DateUtil.getMonthFirstAndLastDate(currentDate);
 		Cursor cursor = null;
 		
-		SharedPreferences  setting =ctx.getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
-		String firstDay = setting.getString("firstDay", "");
-		
 		cursor = db.rawQuery("select strftime('%d',date) from habit  where   date between ? and ? ",
 						FirstDayAndLast); 
-		if (cursor.moveToFirst())
+		
+		int firstDayIndexInThisMonth = getFirstDayIndexInThisMonth(currentDate);//得到这个月的第一天index
+		if (!cursor.moveToFirst())//如果本月无纪录 说明从一开始就保持没有喝
 		{
-			int lastRecordDate;
-			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
-					.getMonth())//本月安装
-				lastRecordDate = Integer.parseInt(DateUtil
-						.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
-								DateUtil.StringToDate(firstDay)));
-			else
-				lastRecordDate = 0;
+			//最长保持不喝饮料天数= 当天-第一天
+	    	 longestKeepingDayOfMonth = DateUtil.getDateIndexInMonth(currentDate) - firstDayIndexInThisMonth ;
+		}
+		else
+		{
 			int thisRecordDate = 0;
+			LogUtil.d("huang",firstDayIndexInThisMonth+"=lastRecordDate");
 			for (int i = 0; i < cursor.getCount(); i++)
 			{
 				thisRecordDate = Integer.parseInt(cursor.getString(0));
-				LogUtil.d("lin",thisRecordDate+"");
-				longestKeepingDayOfMonth = (thisRecordDate - lastRecordDate - 1) > longestKeepingDayOfMonth ? (thisRecordDate - lastRecordDate - 1) : longestKeepingDayOfMonth;
-				lastRecordDate = thisRecordDate;
+				LogUtil.d("huang",thisRecordDate+"=thisRecordDate");
+				longestKeepingDayOfMonth = (thisRecordDate - firstDayIndexInThisMonth - 1) > longestKeepingDayOfMonth ? (thisRecordDate - firstDayIndexInThisMonth - 1) : longestKeepingDayOfMonth;
+				firstDayIndexInThisMonth = thisRecordDate;
 				cursor.moveToNext();
 			}
-		}
-      else//如果本月无纪录
-		{
-			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
-					.getMonth())//本月安装
-				longestKeepingDayOfMonth = Integer.parseInt(DateUtil
-						.daysBetween(DateUtil.StringToDate(firstDay),
-								currentDate));
-			else
-				longestKeepingDayOfMonth = Integer.parseInt(DateUtil
-						.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
-								currentDate));
-
 		}
 	
 	if (!cursor.isClosed())
@@ -323,41 +307,53 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
 		int conscienceDays = 0;
 		SQLiteDatabase db = this.getReadableDatabase();
-		SharedPreferences  setting =ctx.getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
-		String firstDay = setting.getString("firstDay", "");
+
 		String[] FirstDayAndLast = DateUtil.getMonthFirstAndLastDate(currentDate);
 		Cursor cursor = db.rawQuery("select  COUNT(*) from (select  COUNT(DATE(date)) from habit  where date between ? and ? group by DATE(date)) ",FirstDayAndLast); 
 		// select result
-		if (cursor.moveToFirst()) 
-		{
-			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
-					.getMonth())//本月安装
-				conscienceDays = Integer.parseInt(DateUtil
-						.daysBetween(DateUtil.StringToDate(firstDay),
-								currentDate)) - Integer.parseInt(cursor.getString(0))+1;
-			else
-				conscienceDays = Integer.parseInt(DateUtil
-					.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
-							currentDate)) - Integer.parseInt(cursor.getString(0))+1;
-		} else//如果本月无纪录
-		{
-			if (DateUtil.StringToDate(firstDay).getMonth() == currentDate
-					.getMonth())//本月安装
-				conscienceDays = Integer.parseInt(DateUtil
-						.daysBetween(DateUtil.StringToDate(firstDay),
-								currentDate))+1;
-			else
-				conscienceDays = Integer.parseInt(DateUtil
-						.daysBetween(DateUtil.StringToDate(FirstDayAndLast[0]),
-								currentDate))+1;
+		int firstDayIndexInThisMonth = getFirstDayIndexInThisMonth(currentDate);//得到这个月的第一天index
 
+		if (!cursor.moveToFirst()) //如果本月没有记录
+		{
+			//则  本月没喝饮料的自觉天数 = 当前日期 - 第一天
+			conscienceDays =  DateUtil.getDateIndexInMonth(currentDate) - firstDayIndexInThisMonth + 1;
+		} 
+		else//如果本月有纪录
+		{
+			//则  本月没喝饮料的自觉天数 = 当前日期 - 第一天 - 喝了多少天
+			 int drinkDays = Integer.parseInt(cursor.getString(0));//多少天喝了
+			 conscienceDays =  DateUtil.getDateIndexInMonth(currentDate) - firstDayIndexInThisMonth 
+					 -drinkDays + 1;
 		}
 		if (!cursor.isClosed())
 			cursor.close();
 		return conscienceDays;
 	}
 	
-	
+	/**
+	 * 
+	 * @param currentDate 当前时间
+	 * @return 得到当前时间所属月份的第一天
+	 */
+	public int getFirstDayIndexInThisMonth(Date currentDate)
+	{
+		int firstDayIndexInThisMonth;
+		SharedPreferences  setting =ctx.getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
+		String firstDay = setting.getString("firstDay", "");//example 2015-11-04
+		
+		Calendar cal = Calendar.getInstance();
+		if (DateUtil.isSameMonth(DateUtil.StringToDate(firstDay), currentDate))//如果是安装的时间和当前时间属于同一个月份
+		{
+			
+			cal.setTime(DateUtil.StringToDate(firstDay));
+			firstDayIndexInThisMonth = cal.get(Calendar.DAY_OF_MONTH);//第一天从安装的那一天开始算起
+		}
+		else
+		{
+			firstDayIndexInThisMonth = 0;//如果不是这个月安装的 从这月的第一天开始算 
+		}
+		return firstDayIndexInThisMonth;
+	}
 	
 	
 }
