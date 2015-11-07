@@ -20,7 +20,7 @@
         <!-- subheadline style -->
     <style name="textSubheadlineTheme" >
         <item name="android:textSize">@dimen/font_sub_headline</item>
-        <item name="android:lineSpacingExtra">5dp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">5dp</item>
                         

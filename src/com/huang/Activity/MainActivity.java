@@ -7,15 +7,18 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
@@ -37,9 +40,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.huang.model.Habit;
 import com.huang.nodrinkmore.R;
 import com.huang.service.ForeService;
+import com.huang.service.WidgetService;
+import com.huang.service.WidgetService.UpdateViewBinder;
 import com.huang.util.AnimationUtil;
 import com.huang.util.Constant;
 import com.huang.util.DatabaseHelper;
@@ -98,8 +104,29 @@ public class MainActivity extends ActionBarActivity
 	GestureDetector gestureDetector;
 	DatabaseHelper databaseHelper;
 	SharedPreferences  setting;
-	//NotificationManager keepDayNotification;
-	//final int NotificationID = 0;
+
+	/**
+	 * 桌面快捷方式的service binder
+	 */
+	private WidgetService.UpdateViewBinder updateViewBinder;
+	
+	private ServiceConnection serviceConn = new ServiceConnection()
+	{
+		@Override
+		public void onServiceDisconnected(ComponentName name)
+		{
+			LogUtil.d("huang", "onServiceDisconnected");
+		}
+		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service)
+		{
+			LogUtil.d("huang", "onServiceConnected");
+			updateViewBinder = (UpdateViewBinder)service;
+	
+			
+		}
+	};
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{	
@@ -336,6 +363,9 @@ public class MainActivity extends ActionBarActivity
 		List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
 		calendar.setDrinkRecords(drinkDateRecords);
 		calendar.invalidate();
+		
+		Intent bindIntent = new Intent(this,WidgetService.class);
+		bindService(bindIntent, serviceConn, BIND_AUTO_CREATE);  
 		super.onStart();
 	}
 	
@@ -378,12 +408,15 @@ public class MainActivity extends ActionBarActivity
 	private void drink()
 	{
 		LogUtil.d("huang", "drink()");
+		
 		faceToSad(true);
 		
 		databaseHelper.insertDrinkTime();
 		List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
 		calendar.setDrinkRecords(drinkDateRecords);
 		calendar.invalidate();
+		
+		updateViewBinder.getWidgetService().updateViews();//更新桌面
 	}
 	/**
 	 * 表情变化
@@ -530,7 +563,8 @@ public class MainActivity extends ActionBarActivity
 	@Override
 	protected void onDestroy()
 	{
-		//keepDayNotification.cancel(NotificationID);
+		unbindService(serviceConn);  
+		LogUtil.d("huang", "onDestroy unbindService");
 		super.onDestroy();
 	}
 

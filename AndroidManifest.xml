@@ -41,7 +41,19 @@
         </activity>
         
         <service android:name="com.huang.service.ForeService"></service>
-       
+        
+        <!-- 桌面快捷方式的配置  -->
+        <service android:name="com.huang.service.WidgetService"></service>
+        <receiver android:name="com.huang.widget.WidgetProvider">
+            <intent-filter >
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            
+             <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widgetconfig"/>
+            
+        </receiver>
+        
     </application>
 
 </manifest>
