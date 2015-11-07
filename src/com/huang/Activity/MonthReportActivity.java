@@ -66,6 +66,11 @@ public class MonthReportActivity extends Activity implements
 	 */
 	int longestKeepingDayOfMonth = 0;
 
+	/**
+	 * 底部的小提示
+	 */
+	TextView tipsTextView;
+	
 	TextView amDrinkTimesOfMonthTextView;// 4:00--12:00
 	TextView pmDrinkTimesOfMonthTextView;// 12:00--20:00
 	TextView eveningDrinkTimesOfMonthTextView;// 20:00--4:00
@@ -74,7 +79,8 @@ public class MonthReportActivity extends Activity implements
 	private PieChart mChart;// 喝饮料时间分布图表
 	private Typeface tf;// 字体
 
-	protected String[] sectionString = new String[] { "早上", "中午", "晚上" };
+	protected String[] sectionString = new String[] { "早上", "下午", "晚上" };
+	protected int[] sectionColor;
 
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -87,10 +93,14 @@ public class MonthReportActivity extends Activity implements
 
 	public void init()
 	{
+		sectionColor= new int[] { 
+				getResources().getColor(R.color.green_light_more)
+				, getResources().getColor(R.color.blue)
+				, getResources().getColor(R.color.grey)};
 		dateDurationTextView = (TextView) findViewById(R.id.dateDuration);
 		noDrinkDaysTextView = (TextView) findViewById(R.id.noDrinkDays);
-		//monthSumOfDrinkTimesTextView = (TextView) findViewById(R.id.monthSumOfDrinkTimes);
 		longestKeepingDayOfMonthTextView = (TextView) findViewById(R.id.longestKeepingDayOfMonth);
+		tipsTextView = (TextView)findViewById(R.id.tips);
 		mChart = (PieChart) findViewById(R.id.pie_chart);
 
 		currentTime = calendar.getTime();
@@ -114,14 +124,15 @@ public class MonthReportActivity extends Activity implements
 		initData();
 
 	
+		
 
 	
 	}
 
 	private void initChart()
 	{
+		
 		mChart.setDescription("");// 设置表格的描述 在右下角
-
 		mChart.setExtraOffsets(5, 10, 5, 5);// 设置图表外，布局内显示的偏移量
 
 		mChart.setDragDecelerationFrictionCoef(0.95f);// 拖拽滚动时的速度快慢，[0,1) 0代表立即停止
@@ -157,31 +168,45 @@ public class MonthReportActivity extends Activity implements
 	private void initData()
 	{
 
+		//数据在饼图上的文字列表
+		ArrayList<String> yValStringArray = new ArrayList<String>();
+		//底部说明列表
 		ArrayList<String> legendStringArray = new ArrayList<String>();
-		
+		//数据饼图
 		ArrayList<Entry> yVals = new ArrayList<Entry>();
+		//数据颜色
+		ArrayList<Integer> colors = new ArrayList<Integer>();
+		
+		int maxDrinkTimes = 0;
+		int maxIndex = -1;
 		//添加数据
-		for(int i = 0 ;i < partTimeOfDrinktimesOfMonth.length ; i++)
+		for(int i = 0 , j = 0;i < partTimeOfDrinktimesOfMonth.length ; i++)
 		{
-			yVals.add(new Entry(partTimeOfDrinktimesOfMonth[i], i));
-			legendStringArray.add(sectionString[i]+" "+partTimeOfDrinktimesOfMonth[i] + "瓶");//拼接成 早上:5 瓶
+			if(partTimeOfDrinktimesOfMonth[i] != 0 )//说明此时间段有记录
+			{
+				if(partTimeOfDrinktimesOfMonth[i] > maxDrinkTimes)
+				{
+					maxDrinkTimes = partTimeOfDrinktimesOfMonth[i] ;
+					maxIndex = i;
+				}
+				yVals.add(new Entry(partTimeOfDrinktimesOfMonth[i], j++));
+				yValStringArray.add(sectionString[i]+" "+partTimeOfDrinktimesOfMonth[i] + "瓶");//拼接成 早上:5 瓶
+				legendStringArray.add(sectionString[i]);
+				colors.add(sectionColor[i]);
+			}
+		
 		}
+		makeTips(maxIndex);//给出喝水习惯建议
+		
 
 		PieDataSet dataSet = new PieDataSet(yVals, "");
 		dataSet.setSliceSpace(5f);// 设置每个薄片之间的间距
 		dataSet.setSelectionShift(12f);// 点击后放大倍数
 		// add a lot of colors
 
-		ArrayList<Integer> colors = new ArrayList<Integer>();
-		int morningColor = getResources().getColor(R.color.green_light_more);
-		int afternoonColor = getResources().getColor(R.color.blue);
-		int evevingColor = getResources().getColor(R.color.grey);
-		colors.add(morningColor);
-		colors.add(afternoonColor);
-		colors.add(evevingColor);
 		dataSet.setColors(colors);
-
-		PieData data = new PieData(sectionString, dataSet);
+		
+		PieData data = new PieData(yValStringArray, dataSet);
 		data.setValueFormatter(new PercentFormatter());
 		data.setValueTextSize(12f);
 		data.setValueTextColor(Color.BLACK);
@@ -200,6 +225,29 @@ public class MonthReportActivity extends Activity implements
 		legend.setTextSize(12f);
 		legend.setYOffset(5f);
 		legend.setCustom(colors, legendStringArray);//自定义的底部分类说明
+	}
+
+	private void makeTips(int maxIndex)//根据哪个时段喝的最多给出健康提示
+	{
+		String tips = "tips : ";
+		switch (maxIndex)
+		{
+		case -1://没有喝的记录
+				tips +="没有喝饮料的记录！再接再厉！";
+				break;
+		case 0://早上喝的最多
+				tips +="早上喝水的话一天充满活力。";
+				break;
+		case 1://中午喝的最多
+				tips +="下午渴了请喝水。";
+				break;
+		case 2://晚上喝的最多
+				tips +="晚上喝太多饮料不宜于睡眠。";
+				break;
+		default:break;
+		}
+		tipsTextView.setText(tips);
+		
 	}
 
 	//选中饼图的监听事件
