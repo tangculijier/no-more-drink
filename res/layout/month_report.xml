@@ -28,7 +28,7 @@
 	                    android:layout_width="wrap_content"
 	                    android:layout_height="wrap_content"
 	                    android:text="@string/report.text.dateDuration" 
-	                    android:textSize="@dimen/font_headline" />
+	                    android:textSize="@dimen/font_bigger" />
 	                </LinearLayout>
 	                
 	          	
@@ -46,7 +46,7 @@
 		                    android:layout_width="wrap_content"
 		                    android:layout_height="wrap_content"
 		                    android:text="@string/report.text.consistMonthReport" 
-		                    android:textSize="@dimen/font_title" />
+		                    android:textSize="@dimen/font_lager" />
 		                </LinearLayout>
 		                
 	                

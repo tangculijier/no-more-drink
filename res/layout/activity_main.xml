@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title.first"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textSize="@dimen/font_headline" />
+                android:textSize="@dimen/font_bigger" />
             
             <ImageView
                 android:id="@+id/face"
@@ -88,7 +88,7 @@
                 android:text="@string/title.keeptime"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/green_light"
-                android:textSize="@dimen/font_title" 
+                android:textSize="@dimen/font_lager" 
                 />
          
              </RelativeLayout>

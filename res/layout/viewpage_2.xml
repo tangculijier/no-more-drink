@@ -29,7 +29,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/white"
             android:textStyle="bold" 
-            android:textSize="@dimen/font_headline"
+            android:textSize="@dimen/font_bigger"
             android:drawableLeft="@drawable/balance"
             android:gravity="bottom"
             />
@@ -45,7 +45,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/white"
             android:textStyle="bold" 
-            android:textSize="@dimen/font_headline"
+            android:textSize="@dimen/font_bigger"
             />
 
              
@@ -57,7 +57,7 @@
 		            android:textAppearance="?android:attr/textAppearanceLarge"
 		            android:textColor="@color/white"
 		            android:textStyle="bold" 
-		            android:textSize="@dimen/font_title"
+		            android:textSize="@dimen/font_lager"
 		            android:layout_centerInParent="true"
 		            android:padding="15dp"
 		            android:gravity="top"

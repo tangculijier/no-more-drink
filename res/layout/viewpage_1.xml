@@ -35,7 +35,7 @@
             android:textStyle="bold" 
             android:gravity="center"
             android:lineSpacingExtra="15dp"
-            android:textSize="@dimen/font_headline"
+            android:textSize="@dimen/font_bigger"
             />
 
         <ImageView
