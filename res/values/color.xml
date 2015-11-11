@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="cal_date_foreground">#F5F7F9</color>
+
+    <color name="green_holo">#4CAF50</color>
+    <color name="green_dark">#4AAD4E</color>
     <color name="green_light">#81C784</color>
     <color name="green_normal">#51A387</color>
     <color name="green_light_more">#8BC34A</color>
     <color name="white">#FFFFFF</color>
     <color name="blue">#379BFF</color>
-     <color name="grey">#666666</color>
-     <color name="blue_dark">#2E2E3B</color>
+    <color name="grey">#666666</color>
+    <color name="blue_dark">#2E2E3B</color>
           
 </resources>

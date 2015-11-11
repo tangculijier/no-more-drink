@@ -125,10 +125,10 @@ public class MonthReportActivity extends Activity implements
 		dateDurationTextView.setText(tempText);
 
 		//tempText = noDrinkDaysTextView.getText().toString().replace("%s", noDrinkDays + "");
-		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),noDrinkDays+"",getResources().getColor(R.color.green_light_more)));
+		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),noDrinkDays+"",getResources().getColor(R.color.green_dark)));
 
 		tempText = longestKeepingDayOfMonthTextView.getText().toString().replace("%s", longestKeepingDayOfMonth + "");
-		longestKeepingDayOfMonthTextView.setText(MyTextUtil.getSuperscriptSpan(longestKeepingDayOfMonthTextView.getText().toString(),longestKeepingDayOfMonth+"",getResources().getColor(R.color.green_light_more)));
+		longestKeepingDayOfMonthTextView.setText(MyTextUtil.getSuperscriptSpan(longestKeepingDayOfMonthTextView.getText().toString(),longestKeepingDayOfMonth+"",getResources().getColor(R.color.green_dark)));
 
 		initChart();
 

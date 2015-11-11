@@ -22,7 +22,7 @@ public class MyTextUtil
 	public static SpannableString getSuperscriptSpan(String text,String highLightStr,int color)
 	{
 		text = text.replace("%s", highLightStr);//先替换%s
-		int start = 5;
+		int start = text.indexOf(highLightStr);
 		int end = start + String.valueOf(highLightStr).length();
 		
 		SpannableString spanText = new SpannableString(text);
@@ -33,6 +33,7 @@ public class MyTextUtil
 		spanText.setSpan(new StyleSpan(Typeface.NORMAL), start, end,
 				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);//字体
 		
+		//highLightStr的后面的一个字置为上标
 		spanText.setSpan(new SuperscriptSpan(), end + 1, end + 2, 
 				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);//上标
 		spanText.setSpan(new RelativeSizeSpan(0.7f), end + 1,end + 2,
@@ -40,5 +41,6 @@ public class MyTextUtil
 		return spanText;
 		
 	}
+	
 	
 }

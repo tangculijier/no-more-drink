@@ -9,7 +9,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center"
                 >
                 
                 
@@ -30,24 +29,28 @@
 	                    android:layout_height="wrap_content"
 	                    android:text="@string/report.text.dateDuration" 
 	                    android:textSize="@dimen/font_bigger" />
+	                
 	                </LinearLayout>
 	                
 	          	
 	          	
 	                <LinearLayout
-		                android:layout_width="match_parent"
+		                android:layout_width="wrap_content"
 		                android:layout_height="wrap_content"
-		                android:orientation="vertical"
-		                android:padding="10dp" 
-		                android:gravity="center"
+		                android:orientation="horizontal"
+		                android:paddingBottom="10dp"
 		                >
-		                
 		                <TextView
 		                    
-		                    android:layout_width="wrap_content"
-		                    android:layout_height="wrap_content"
+		                    android:layout_width="150dp"
+		                    android:layout_height="30dp"
+		                    android:layout_gravity="left"
 		                    android:text="@string/report.text.consistMonthReport" 
-		                    android:textSize="@dimen/font_lager" />
+		                    android:textSize="@dimen/font_normal"
+		                    android:gravity="center" 
+		                    android:textColor="@android:color/white"
+		                    android:background="@drawable/tab"/>
+
 		                </LinearLayout>
 		                
 	                
