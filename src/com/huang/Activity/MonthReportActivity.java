@@ -35,46 +35,48 @@ import com.huang.nodrinkmore.R;
 import com.huang.util.DatabaseHelper;
 import com.huang.util.DateUtil;
 import com.huang.util.LogUtil;
+import com.huang.util.MyTextUtil;
 
 public class MonthReportActivity extends Activity implements
 		OnChartValueSelectedListener
 {
+	
 	DatabaseHelper databaseHelper;
-	Calendar calendar = Calendar.getInstance();
+	
+	
+	Calendar calendar ;
+	
 	Date currentTime ;
 	/**
 	 * 时间区间
 	 */
-	TextView dateDurationTextView;  
-	String dateDuration;
+	private TextView dateDurationTextView;  
+	private String dateDuration;
 
-	TextView noDrinkDaysTextView;  
+	private TextView noDrinkDaysTextView;  
 	/**
 	 * 自觉天数(没有喝饮料的天数)
 	 */
-	int noDrinkDays = 0;
+	private int noDrinkDays = 0;
 
-	TextView monthSumOfDrinkTimesTextView; // 月饮用总量
+	private TextView monthSumOfDrinkTimesTextView; // 月饮用总量
 	/**
 	 * 月饮用总量
 	 */
-	int monthSumOfDrinkTimes = 0;
+	private int monthSumOfDrinkTimes = 0;
 
-	TextView longestKeepingDayOfMonthTextView; // 最长保持纪录
+	private TextView longestKeepingDayOfMonthTextView; // 最长保持纪录
 	/**
 	 * 最长保持纪录(天)
 	 */
-	int longestKeepingDayOfMonth = 0;
+	private int longestKeepingDayOfMonth = 0;
 
 	/**
 	 * 底部的小提示
 	 */
-	TextView tipsTextView;
+	private TextView tipsTextView;
 	
-	TextView amDrinkTimesOfMonthTextView;// 4:00--12:00
-	TextView pmDrinkTimesOfMonthTextView;// 12:00--20:00
-	TextView eveningDrinkTimesOfMonthTextView;// 20:00--4:00
-	int partTimeOfDrinktimesOfMonth[] ;
+	private int partTimeOfDrinktimesOfMonth[] ;
 
 	private PieChart mChart;// 喝饮料时间分布图表
 	private Typeface tf;// 字体
@@ -87,11 +89,12 @@ public class MonthReportActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// to title
 		setContentView(R.layout.month_report);
-		init();
+		findById();
+		initData();
 
 	}
 
-	public void init()
+	public void findById()
 	{
 		sectionColor= new int[] { 
 				getResources().getColor(R.color.green_light_more)
@@ -102,29 +105,34 @@ public class MonthReportActivity extends Activity implements
 		longestKeepingDayOfMonthTextView = (TextView) findViewById(R.id.longestKeepingDayOfMonth);
 		tipsTextView = (TextView)findViewById(R.id.tips);
 		mChart = (PieChart) findViewById(R.id.pie_chart);
-
+	}
+	
+	public void initData()
+	{
+		
+		calendar = Calendar.getInstance();
 		currentTime = calendar.getTime();
 		databaseHelper = new DatabaseHelper(this);
+		
 		dateDuration = DateUtil.getDateDuration(currentTime);
 		noDrinkDays = databaseHelper.getNoDrinkDaysNumber(currentTime);
 		monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(currentTime);
 		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(currentTime);
 		partTimeOfDrinktimesOfMonth = databaseHelper.getTimeSectionOfDrinktimesOfMonth(currentTime);
 
+		
 		String tempText = dateDurationTextView.getText().toString().replace("%s", dateDuration);
 		dateDurationTextView.setText(tempText);
 
-		tempText = noDrinkDaysTextView.getText().toString().replace("%s", noDrinkDays + "");
-		noDrinkDaysTextView.setText(tempText);
-			
+		//tempText = noDrinkDaysTextView.getText().toString().replace("%s", noDrinkDays + "");
+		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),noDrinkDays+"",getResources().getColor(R.color.green_light_more)));
+
 		tempText = longestKeepingDayOfMonthTextView.getText().toString().replace("%s", longestKeepingDayOfMonth + "");
-		longestKeepingDayOfMonthTextView.setText(tempText);
+		longestKeepingDayOfMonthTextView.setText(MyTextUtil.getSuperscriptSpan(longestKeepingDayOfMonthTextView.getText().toString(),longestKeepingDayOfMonth+"",getResources().getColor(R.color.green_light_more)));
 
 		initChart();
-		initData();
 
-	
-		
+
 
 	
 	}
@@ -147,25 +155,28 @@ public class MonthReportActivity extends Activity implements
 		mChart.setUsePercentValues(true);// 是否带百分号
 		mChart.animateX(1400, Easing.EasingOption.EaseInOutQuad);
 		
-		
+		initChartData();
 	}
-	  private SpannableString generateCenterSpannableText() {
 
-		  	String text = "喝饮料时间分布\n饮用总量 "+monthSumOfDrinkTimes+"瓶";
-		  	int x = 7;
-		  	int y = 7;
-	        SpannableString spannableString = new SpannableString(text);
-	        spannableString.setSpan(new RelativeSizeSpan(1.7f), 0, x, 0);
-	        spannableString.setSpan(new StyleSpan(Typeface.NORMAL), x, spannableString.length() - y, 0);
-	        spannableString.setSpan(new ForegroundColorSpan(Color.GRAY), x, spannableString.length() - y, 0);
-	        spannableString.setSpan(new RelativeSizeSpan(.8f), x, spannableString.length() - y, 0);
-	        spannableString.setSpan(new StyleSpan(Typeface.ITALIC), spannableString.length() - x, spannableString.length(), 0);
-	        spannableString.setSpan(new ForegroundColorSpan(ColorTemplate.getHoloBlue()), spannableString.length() - x, spannableString.length(), 0);
-	        return spannableString;
-	    }
+	private SpannableString generateCenterSpannableText()
+	{
+
+		String text = "喝饮料时间分布\n饮用总量 " + monthSumOfDrinkTimes + "瓶";
+		int x = 7;
+		int y = 7;
+		SpannableString spannableString = new SpannableString(text);
+		spannableString.setSpan(new RelativeSizeSpan(1.3f), 0, x, 0);
+		spannableString.setSpan(new StyleSpan(Typeface.NORMAL), x,spannableString.length() - y, 0);
+		spannableString.setSpan(new ForegroundColorSpan(Color.GRAY), x,spannableString.length() - y, 0);
+		spannableString.setSpan(new RelativeSizeSpan(.8f), x,spannableString.length() - y, 0);
+		spannableString.setSpan(new StyleSpan(Typeface.ITALIC),spannableString.length() - x, spannableString.length(), 0);
+		spannableString.setSpan(new ForegroundColorSpan(ColorTemplate.getHoloBlue()),
+				spannableString.length() - x, spannableString.length(), 0);
+		return spannableString;
+	}
 	
 	
-	private void initData()
+	private void initChartData()
 	{
 
 		//数据在饼图上的文字列表
@@ -196,8 +207,7 @@ public class MonthReportActivity extends Activity implements
 			}
 		
 		}
-		makeTips(maxIndex);//给出喝水习惯建议
-		
+		makeTips(maxIndex);//give the suggestion of drink
 
 		PieDataSet dataSet = new PieDataSet(yVals, "");
 		dataSet.setSliceSpace(5f);// 设置每个薄片之间的间距
@@ -229,22 +239,22 @@ public class MonthReportActivity extends Activity implements
 
 	private void makeTips(int maxIndex)//根据哪个时段喝的最多给出健康提示
 	{
-		String tips = "tips : ";
+		String tips = "";
 		switch (maxIndex)
 		{
-		case -1://没有喝的记录
-				tips +="没有喝饮料的记录！再接再厉！";
-				break;
-		case 0://早上喝的最多
-				tips +="早上喝水的话一天充满活力。";
-				break;
-		case 1://中午喝的最多
-				tips +="下午渴了请喝水。";
-				break;
-		case 2://晚上喝的最多
-				tips +="晚上喝太多饮料不宜于睡眠。";
-				break;
-		default:break;
+			case -1://没有喝的记录
+					tips +="没有喝饮料的记录！再接再厉！";
+					break;
+			case 0://早上喝的最多
+					tips +="早上喝水的话一天充满活力。";
+					break;
+			case 1://中午喝的最多
+					tips +="下午渴了请喝水。";
+					break;
+			case 2://晚上喝的最多
+					tips +="晚上喝太多饮料不宜于睡眠。";
+					break;
+			default:break;
 		}
 		tipsTextView.setText(tips);
 		

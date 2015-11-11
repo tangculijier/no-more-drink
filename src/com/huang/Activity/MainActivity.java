@@ -532,12 +532,32 @@ public class MainActivity extends ActionBarActivity
 	{
 			int balance = setting.getInt("balance", Constant.BALANCE_INIT_VALUE);
 			balance = isAdd == true ? balance + 1 : balance - 1 ;
+			final int balanceFinal = balance;
 			AnimationSet animation = isAdd == true ? 
 					AnimationUtil.getAddBalanceAnimation() : AnimationUtil.getSubBalanceAnimation(0.6f);
-			setting.edit().putInt("balance", balance).commit();
-			balanceText.setText(balance+"");
+			animation.setAnimationListener(new AnimationListener()
+			{
+				@Override
+				public void onAnimationStart(Animation animation)
+				{
+				}
+				
+				@Override
+				public void onAnimationRepeat(Animation animation)
+				{
+				}
+				
+				@Override
+				public void onAnimationEnd(Animation animation)
+				{	//hanlder the balance after the animation end
+					setting.edit().putInt("balance", balanceFinal).commit();
+					balanceText.setText(balanceFinal+"");
+					balanceTextSetColor(balanceFinal);
+				}
+			});
+		
 			balanceImage.startAnimation(animation);
-			balanceTextSetColor(balance);
+		
 			
 	}
 	/**
