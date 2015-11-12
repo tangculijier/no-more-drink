@@ -11,24 +11,25 @@
                 android:orientation="vertical"
                 >
                 
-                
-                
 	          	<LinearLayout
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
-	                android:orientation="vertical"
-	                android:divider="@drawable/my_divider"
+	                android:orientation="horizontal"
 	                android:padding="10dp" 
-	                android:showDividers="end"
 	                android:gravity="center"
 	                >
+
 	                
 	                <TextView
-	                    android:id="@+id/dateDuration"
+	                    android:id="@+id/currentMonth"
 	                    android:layout_width="wrap_content"
 	                    android:layout_height="wrap_content"
 	                    android:text="@string/report.text.dateDuration" 
-	                    android:textSize="@dimen/font_bigger" />
+	                    android:textSize="@dimen/font_lager"
+	                    android:clickable="true"
+	                    android:drawableRight="@drawable/month_title_selector"
+	                    />
+
 	                
 	                </LinearLayout>
 	                
@@ -42,7 +43,7 @@
 		                >
 		                <TextView
 		                    
-		                    android:layout_width="150dp"
+		                    android:layout_width="130dp"
 		                    android:layout_height="30dp"
 		                    android:layout_gravity="left"
 		                    android:text="@string/report.text.consistMonthReport" 

@@ -272,7 +272,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		cursor = db.rawQuery("select strftime('%d',date) from habit  where   date between ? and ? ",
 						FirstDayAndLast); 
 		
-		int firstDayIndexInThisMonth = getFirstDayIndexInThisMonth(currentDate);//得到这个月的第一天index
+		int firstDayIndexInThisMonth = getFirstDayIndexInThisMonth(currentDate);//得到这个月的第一天index 有可能是月初 有可能是安装那天
+		int currentDayIndexInThisMonth = getcurrentDayIndexInThisMonth(currentDate);//
+
 		if (!cursor.moveToFirst())//如果本月无纪录 说明从一开始就保持没有喝
 		{
 			//最长保持不喝饮料天数= 当天-第一天
@@ -280,16 +282,25 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		}
 		else
 		{
-			int thisRecordDate = 0;
+			//把每条记录拿出来比较找间隔最大的
+			int current = 0;
+			int last = firstDayIndexInThisMonth;
 			LogUtil.d("huang",firstDayIndexInThisMonth+"=lastRecordDate");
 			for (int i = 0; i < cursor.getCount(); i++)
 			{
-				thisRecordDate = Integer.parseInt(cursor.getString(0));
-				LogUtil.d("huang",thisRecordDate+"=thisRecordDate");
-				longestKeepingDayOfMonth = (thisRecordDate - firstDayIndexInThisMonth - 1) > longestKeepingDayOfMonth ? (thisRecordDate - firstDayIndexInThisMonth - 1) : longestKeepingDayOfMonth;
-				firstDayIndexInThisMonth = thisRecordDate;
+				current = Integer.parseInt(cursor.getString(0));
+				LogUtil.d("huang",current+"=current");
+				longestKeepingDayOfMonth = (current - last - 1) > longestKeepingDayOfMonth ?
+						(current - last - 1) : longestKeepingDayOfMonth;
+				last = current;
 				cursor.moveToNext();
+				if(i == cursor.getCount() - 1)//到最后一个的时候记录和当天的保持间隔
+				{
+					longestKeepingDayOfMonth = (currentDayIndexInThisMonth- current  - 1) > longestKeepingDayOfMonth ?
+							(currentDayIndexInThisMonth- current  - 1) : longestKeepingDayOfMonth;
+				}
 			}
+			
 		}
 	
 	if (!cursor.isClosed())
@@ -297,6 +308,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		
 		return longestKeepingDayOfMonth; 
 	}
+	
 	
 	
 	/**
@@ -353,6 +365,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			firstDayIndexInThisMonth = 0;//如果不是这个月安装的 从这月的第一天开始算 
 		}
 		return firstDayIndexInThisMonth;
+	}
+	
+	// 那说明最后一天从currentDate算起
+	private int getcurrentDayIndexInThisMonth(Date currentDate)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currentDate);
+		return cal.get(Calendar.DAY_OF_MONTH);
 	}
 	
 	

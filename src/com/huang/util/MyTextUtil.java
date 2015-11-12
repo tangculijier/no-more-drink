@@ -14,7 +14,9 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.text.style.SubscriptSpan;
 import android.text.style.SuperscriptSpan;
+import android.text.style.TypefaceSpan;
 
 public class MyTextUtil
 {
@@ -28,19 +30,19 @@ public class MyTextUtil
 		SpannableString spanText = new SpannableString(text);
 		spanText.setSpan(new ForegroundColorSpan(color), start, end,
 				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-		spanText.setSpan(new RelativeSizeSpan(2.0f), start,end,
+		spanText.setSpan(new RelativeSizeSpan(3.0f), start,end,
 				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);//相对大小（文本字体）
 		spanText.setSpan(new StyleSpan(Typeface.NORMAL), start, end,
 				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);//字体
 		
-		//highLightStr的后面的一个字置为上标
-		spanText.setSpan(new SuperscriptSpan(), end + 1, end + 2, 
-				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);//上标
-		spanText.setSpan(new RelativeSizeSpan(0.7f), end + 1,end + 2,
+//		//highLightStr的后面的一个字置为上标
+//		spanText.setSpan(new SuperscriptSpan(), end + 1, end + 2, 
+//				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);//上标
+		
+		spanText.setSpan(new RelativeSizeSpan(0.8f), end + 1,end + 2,
 				Spannable.SPAN_INCLUSIVE_EXCLUSIVE);//相对大小（文本字体）
 		return spanText;
 		
 	}
-	
 	
 }

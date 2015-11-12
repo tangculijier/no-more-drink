@@ -7,17 +7,14 @@ import java.util.Date;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -33,7 +30,6 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.huang.nodrinkmore.R;
 import com.huang.util.DatabaseHelper;
-import com.huang.util.DateUtil;
 import com.huang.util.LogUtil;
 import com.huang.util.MyTextUtil;
 
@@ -50,8 +46,11 @@ public class MonthReportActivity extends Activity implements
 	/**
 	 * 时间区间
 	 */
-	private TextView dateDurationTextView;  
-	private String dateDuration;
+	private TextView currentMonthTextView;  
+	/**
+	 * 当前月报时间年份和月份
+	 */
+	private String currentMonth;
 
 	private TextView noDrinkDaysTextView;  
 	/**
@@ -100,11 +99,21 @@ public class MonthReportActivity extends Activity implements
 				getResources().getColor(R.color.green_light_more)
 				, getResources().getColor(R.color.blue)
 				, getResources().getColor(R.color.grey)};
-		dateDurationTextView = (TextView) findViewById(R.id.dateDuration);
+		currentMonthTextView = (TextView) findViewById(R.id.currentMonth);
 		noDrinkDaysTextView = (TextView) findViewById(R.id.noDrinkDays);
 		longestKeepingDayOfMonthTextView = (TextView) findViewById(R.id.longestKeepingDayOfMonth);
 		tipsTextView = (TextView)findViewById(R.id.tips);
 		mChart = (PieChart) findViewById(R.id.pie_chart);
+		currentMonthTextView.setOnClickListener(new OnClickListener()
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				LogUtil.d("huang","month picker");
+				
+			}
+		});
 	}
 	
 	public void initData()
@@ -114,20 +123,20 @@ public class MonthReportActivity extends Activity implements
 		currentTime = calendar.getTime();
 		databaseHelper = new DatabaseHelper(this);
 		
-		dateDuration = DateUtil.getDateDuration(currentTime);
+		//currentMonth = DateUtil.getcurrentMonth(currentTime);
 		noDrinkDays = databaseHelper.getNoDrinkDaysNumber(currentTime);
 		monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(currentTime);
 		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(currentTime);
 		partTimeOfDrinktimesOfMonth = databaseHelper.getTimeSectionOfDrinktimesOfMonth(currentTime);
 
-		
-		String tempText = dateDurationTextView.getText().toString().replace("%s", dateDuration);
-		dateDurationTextView.setText(tempText);
+		tf = Typeface.createFromAsset(getAssets(), "AgencyFB.ttf");
+		currentMonthTextView.setText(calendar.get(Calendar.YEAR)+"/"+(calendar.get(Calendar.MONTH) + 1));
+		currentMonthTextView.setTypeface(tf,Typeface.BOLD);
 
 		//tempText = noDrinkDaysTextView.getText().toString().replace("%s", noDrinkDays + "");
-		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),noDrinkDays+"",getResources().getColor(R.color.green_dark)));
+		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),
+				noDrinkDays+"",getResources().getColor(R.color.green_dark)));
 
-		tempText = longestKeepingDayOfMonthTextView.getText().toString().replace("%s", longestKeepingDayOfMonth + "");
 		longestKeepingDayOfMonthTextView.setText(MyTextUtil.getSuperscriptSpan(longestKeepingDayOfMonthTextView.getText().toString(),longestKeepingDayOfMonth+"",getResources().getColor(R.color.green_dark)));
 
 		initChart();
