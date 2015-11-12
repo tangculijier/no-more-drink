@@ -36,6 +36,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	public static final String CREATE_DRINK = "create table habit (id integer PRIMARY KEY AUTOINCREMENT, date timestamp ,type SMALLINT);";
 
+	public static final String CREATE_ANALYSIS = "create table analysis (id integer PRIMARY KEY AUTOINCREMENT, month date ,"
+			+ "nodrinkdays INT,longestkeepday INT,morningtimes INT,afternoontimes INT,eveningtimes INT);";
+
 	private Context ctx;
 	
 	public DatabaseHelper(Context ctx)
@@ -51,13 +54,17 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	}
 	
 
-
+	/**
+	 * 第一次用的时候执行
+	 */
 	@Override
 	public void onCreate(SQLiteDatabase db)
 	{
 		LogUtil.d("huang", "create database");
 		db.execSQL("DROP TABLE IF EXISTS habit");  
+		db.execSQL("DROP TABLE IF EXISTS analysis");  
 		db.execSQL(CREATE_DRINK);
+		db.execSQL(CREATE_ANALYSIS);
 		
 	}
 

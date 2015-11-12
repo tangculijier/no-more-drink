@@ -18,9 +18,7 @@
 	<string name="report.text.conscienceDays">自觉天数\n%s 天</string>
 	<string name="report.text.monthSumOfDrinkTimes">饮用总量\n%s 次</string>
 	<string name="report.text.longestKeepingDayOfMonth">最长坚持\n%s 天</string>
-	<string name="report.text.amDrinkTimesOfMonth">4:00——12:00月总量0瓶</string>
-    <string name="report.text.pmDrinkTimesOfMonth">12:00——20:00月总量0瓶</string>
-	<string name="report.text.eveningDrinkTimesOfMonth">20:00——4:00月总量0瓶</string>
+	<string name="report.datepicker.dialog.title">请选择月份</string>
 	
 	
 	<!-- viewpage -->

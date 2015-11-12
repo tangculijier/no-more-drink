@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,9 +13,11 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -32,6 +35,7 @@ import com.huang.nodrinkmore.R;
 import com.huang.util.DatabaseHelper;
 import com.huang.util.LogUtil;
 import com.huang.util.MyTextUtil;
+import com.huang.views.MyDatePicker;
 
 public class MonthReportActivity extends Activity implements
 		OnChartValueSelectedListener
@@ -111,11 +115,22 @@ public class MonthReportActivity extends Activity implements
 			public void onClick(View v)
 			{
 				LogUtil.d("huang","month picker");
-				
+				Calendar cal = Calendar.getInstance();
+				MyDatePicker mDatePicker = new MyDatePicker(MonthReportActivity.this,Datelistener, Calendar.getInstance());
+				mDatePicker.setIcon(R.drawable.datepicker_icon);
+				mDatePicker.setTitle(R.string.report_datepicker_dialog_title);
+				mDatePicker.show();
 			}
 		});
 	}
-	
+	private DatePickerDialog.OnDateSetListener Datelistener=new DatePickerDialog.OnDateSetListener()
+    {
+        @Override
+        public void onDateSet(DatePicker view, int myyear, int monthOfYear,int dayOfMonth) {
+            LogUtil.d("huang", "myyear="+myyear+" monthOfYear"+monthOfYear+" dayOfMonth"+dayOfMonth);
+        }
+        
+    };
 	public void initData()
 	{
 		
@@ -123,7 +138,6 @@ public class MonthReportActivity extends Activity implements
 		currentTime = calendar.getTime();
 		databaseHelper = new DatabaseHelper(this);
 		
-		//currentMonth = DateUtil.getcurrentMonth(currentTime);
 		noDrinkDays = databaseHelper.getNoDrinkDaysNumber(currentTime);
 		monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(currentTime);
 		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(currentTime);
@@ -133,7 +147,6 @@ public class MonthReportActivity extends Activity implements
 		currentMonthTextView.setText(calendar.get(Calendar.YEAR)+"/"+(calendar.get(Calendar.MONTH) + 1));
 		currentMonthTextView.setTypeface(tf,Typeface.BOLD);
 
-		//tempText = noDrinkDaysTextView.getText().toString().replace("%s", noDrinkDays + "");
 		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),
 				noDrinkDays+"",getResources().getColor(R.color.green_dark)));
 
