@@ -10,15 +10,16 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -31,8 +32,10 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.huang.model.Report;
 import com.huang.nodrinkmore.R;
 import com.huang.util.DatabaseHelper;
+import com.huang.util.DateUtil;
 import com.huang.util.LogUtil;
 import com.huang.util.MyTextUtil;
 import com.huang.views.MyDatePicker;
@@ -127,7 +130,25 @@ public class MonthReportActivity extends Activity implements
     {
         @Override
         public void onDateSet(DatePicker view, int myyear, int monthOfYear,int dayOfMonth) {
-            LogUtil.d("huang", "myyear="+myyear+" monthOfYear"+monthOfYear+" dayOfMonth"+dayOfMonth);
+        	//得到所选月份的最后一天
+        	monthOfYear += 1 ;
+        	String monthOfYearStr = monthOfYear < 10 ? ( "0" + monthOfYear ): monthOfYear + "";
+            String pickDateStr = myyear + "-" + monthOfYearStr + "-" + "01";
+            Date pickDate = DateUtil.getLastDateInMonth(DateUtil.StringToDate(pickDateStr)); 
+            LogUtil.d("huang", "pickDate="+pickDate);
+            Report report = databaseHelper.getAnalysis(DateUtil.DateToStringNoHour(pickDate));
+            if(!TextUtils.isEmpty(report.getDate()))
+            {
+            	//刷新所有
+            	currentMonthTextView.setText(myyear + "/" + monthOfYearStr);
+            	LogUtil.d("huang", "这个月"+report.getDate()+"数据为");
+            	LogUtil.d("huang", "getNoDrinkDays"+report.getNoDrinkDays());
+            }
+            else
+            {
+            	Toast.makeText(MonthReportActivity.this, "所选月份没有记录", Toast.LENGTH_LONG).show();
+            }
+            
         }
         
     };
@@ -143,8 +164,10 @@ public class MonthReportActivity extends Activity implements
 		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(currentTime);
 		partTimeOfDrinktimesOfMonth = databaseHelper.getTimeSectionOfDrinktimesOfMonth(currentTime);
 
+		int month = calendar.get(Calendar.MONTH) + 1;
+		String monthStr = month < 10 ? ( "0" + month ): month + "";
 		tf = Typeface.createFromAsset(getAssets(), "AgencyFB.ttf");
-		currentMonthTextView.setText(calendar.get(Calendar.YEAR)+"/"+(calendar.get(Calendar.MONTH) + 1));
+		currentMonthTextView.setText(calendar.get(Calendar.YEAR)+"/"+monthStr);
 		currentMonthTextView.setTypeface(tf,Typeface.BOLD);
 
 		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),

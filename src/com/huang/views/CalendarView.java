@@ -191,7 +191,7 @@ public class CalendarView extends View  implements View.OnTouchListener
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
-		LogUtil.d("huang", "onDraw");
+		//LogUtil.d("huang", "onDraw");
 		Paint borderPaint = setBorderPaint();
 		Path borderPath = drawBorderPath();//画边框
 		
@@ -223,7 +223,7 @@ public class CalendarView extends View  implements View.OnTouchListener
 		{
 			todayIndexArray = currentStartIndex + calendar.get(Calendar.DAY_OF_MONTH)  - 1 ;
 		}
-		LogUtil.d("huang", "currentdate="+currentDate+" currentStartIndex="+currentStartIndex);
+		//LogUtil.d("huang", "currentdate="+currentDate+" currentStartIndex="+currentStartIndex);
 		
 		drawDrinkRecords(canvas);//画喝过饮料的日期背景
 		
@@ -239,7 +239,7 @@ public class CalendarView extends View  implements View.OnTouchListener
 
 	public void drawDrinkRecords(Canvas canvas)
 	{
-		LogUtil.d("huang", "drawDrinkRecords");
+		//LogUtil.d("huang", "drawDrinkRecords");
 		if(drinkRecords != null && drinkRecords.size() != 0)
 		{
 			Paint drinkBgPaint = new Paint();
@@ -287,7 +287,7 @@ public class CalendarView extends View  implements View.OnTouchListener
 			}
 			if( todayIndexArray != -1 && i == todayIndexArray) //如果是今天 用红色字体标注
 			{
-				LogUtil.d("huang", "isTodayDrinked="+isTodayDrinked);
+				//LogUtil.d("huang", "isTodayDrinked="+isTodayDrinked);
 				if(isTodayDrinked == false)//今天还没有喝
 				{
 					color = todayNumberColor;
@@ -305,7 +305,7 @@ public class CalendarView extends View  implements View.OnTouchListener
 	
 	public void drawBgByIndex(Canvas canvas, int index, Paint Paint, int dateDrinkTimes)
 	{
-			LogUtil.d("huang", "drawBgByIndex 接收到的index="+index+" dateDrinkTimes"+dateDrinkTimes);
+			//LogUtil.d("huang", "drawBgByIndex 接收到的index="+index+" dateDrinkTimes"+dateDrinkTimes);
 			//LogUtil.d("huang", "today行"+index % weekText.length );
 			//LogUtil.d("huang", "today列"+(index / weekText.length ));
 			float left = calLeftMargin + (index % weekText.length ) * cellWidth;

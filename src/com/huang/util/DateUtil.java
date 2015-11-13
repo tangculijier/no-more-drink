@@ -102,18 +102,16 @@ public class DateUtil
 	
 	/**
 	 * @param currentDate 当前时间 example : 2015-11-15
-	 * @return 返回本月期间 example: 2015/11/01 ~ 2015/11/15
+	 * @return 返回本月最后一天 example:2015/11/30
 	 */
 	
-	public static String getDateDuration(Date currentDate)
+	public static Date getLastDateInMonth(Date currentDate)
 	{
-		String dateDuration ="";
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(currentDate);
-		cal.set(Calendar.DAY_OF_MONTH, 1); 
-		Date first = cal.getTime();
-		dateDuration = DateToStringNoHour(first) + " ~ " + DateToStringNoHour(currentDate);
-		return dateDuration.replaceAll("-", "/");
+		cal.add(Calendar.MONTH, 1);
+		cal.set(Calendar.DAY_OF_MONTH, 0);
+		return cal.getTime();
 	}
 	
 	
@@ -149,4 +147,31 @@ public class DateUtil
 		cal.setTime(date);
 		return  cal.get(Calendar.DAY_OF_MONTH);
 	}
+	
+	/**
+	 * @param 当前时间
+	 * @return 第几个月
+	 */
+	public static int getMonth(Date date)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return  cal.get(Calendar.MONDAY) + 1;
+	}
+	
+	
+	/**
+	 * @param currentDate 当前时间 example : 2015-11-15
+	 * @return 返回上个月最后一天 example:2015/10/31
+	 */
+	
+	public static Date getPreMonthLastDay(Date currentDate)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currentDate);
+		cal.set(Calendar.DAY_OF_MONTH, 1);//得到本月第一天
+		cal.add(Calendar.DATE, -1);//往前推一天
+		return cal.getTime();
+	}
+	
 }

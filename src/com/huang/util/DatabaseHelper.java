@@ -1,8 +1,5 @@
 package com.huang.util;
 
-import java.sql.Time;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,10 +12,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.github.mikephil.charting.utils.Utils;
 import com.huang.model.Habit;
+import com.huang.model.Report;
 /**
  * 操纵sqlite的工具类
  */
@@ -86,7 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		
 		SQLiteDatabase db = this.getReadableDatabase();
 		String[] FirstDayAndLast = DateUtil.getMonthFirstAndLastDate(currentDate);
-		LogUtil.d("huang", "this month first day="+FirstDayAndLast[0]+" lastday="+FirstDayAndLast[1]);
+		//LogUtil.d("huang", "this month first day="+FirstDayAndLast[0]+" lastday="+FirstDayAndLast[1]);
 
 		 Cursor cursor = db.rawQuery("select  DATE(date),COUNT(id) from habit  where date between ? and ? group by DATE(date)",FirstDayAndLast);
 		//select result
@@ -99,7 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		    	Habit habit = new Habit();
 		    	habit.setDate(date);
 		    	habit.setDateDrinkTimes(dateDrinkTimes);
-		    	LogUtil.d("huang", "cursor i="+i+" date="+date +" dateDrinkTimes="+dateDrinkTimes);
+		    	//LogUtil.d("huang", "cursor i="+i+" date="+date +" dateDrinkTimes="+dateDrinkTimes);
 		    	currentMonthDrinkRecord.add(habit);
 		    	cursor.moveToNext();  
 		    	
@@ -120,7 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		SQLiteDatabase db = this.getWritableDatabase();
 		java.util.Date utilDate = new java.util.Date();  
 		db.execSQL("insert into habit values(null,?,?)",new Object[]{DateUtil.DateToString(utilDate),"1"});
-		LogUtil.d("huang", "insert success");
+		//LogUtil.d("huang", "insert success");
 	}
 	
 	
@@ -142,18 +138,18 @@ public class DatabaseHelper extends SQLiteOpenHelper
 				String firstDay = setting.getString("firstDay", "");
 				res[0] = DateUtil.daysBetween(DateUtil.StringToDate(firstDay), nowDay);
 				recordNumber = "0";
-				LogUtil.d("huang", "no records firstday="+firstDay+" nowday="+nowDay);
+				//LogUtil.d("huang", "no records firstday="+firstDay+" nowday="+nowDay);
 			}
 			else
 			{
 				Date lastDayDate = DateUtil.StringToDate(habit.getDate());
 				res[0] = DateUtil.daysBetween(lastDayDate, nowDay);
 				recordNumber = "more";
-				LogUtil.d("huang", "lastDay="+habit.getDate()+"nowDay="+nowDay+"  daysbetween="+res[0]);
+				//LogUtil.d("huang", "lastDay="+habit.getDate()+"nowDay="+nowDay+"  daysbetween="+res[0]);
 			}
 	
 		res[1] = recordNumber;
-		LogUtil.d("huang", "recordNumber="+res[1]);
+		//LogUtil.d("huang", "recordNumber="+res[1]);
 		
 		return res;
 		
@@ -280,7 +276,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 						FirstDayAndLast); 
 		
 		int firstDayIndexInThisMonth = getFirstDayIndexInThisMonth(currentDate);//得到这个月的第一天index 有可能是月初 有可能是安装那天
-		int currentDayIndexInThisMonth = getcurrentDayIndexInThisMonth(currentDate);//
+		int currentDayIndexInThisMonth = DateUtil.getDateIndexInMonth(currentDate);//
 
 		if (!cursor.moveToFirst())//如果本月无纪录 说明从一开始就保持没有喝
 		{
@@ -292,11 +288,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			//把每条记录拿出来比较找间隔最大的
 			int current = 0;
 			int last = firstDayIndexInThisMonth;
-			LogUtil.d("huang",firstDayIndexInThisMonth+"=lastRecordDate");
 			for (int i = 0; i < cursor.getCount(); i++)
 			{
 				current = Integer.parseInt(cursor.getString(0));
-				LogUtil.d("huang",current+"=current");
 				longestKeepingDayOfMonth = (current - last - 1) > longestKeepingDayOfMonth ?
 						(current - last - 1) : longestKeepingDayOfMonth;
 				last = current;
@@ -335,14 +329,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		if (!cursor.moveToFirst()) //如果本月没有记录
 		{
 			//则  本月没喝饮料的自觉天数 = 当前日期 - 第一天
-			conscienceDays =  DateUtil.getDateIndexInMonth(currentDate) - firstDayIndexInThisMonth + 1;
+			conscienceDays =  DateUtil.getDateIndexInMonth(currentDate) - firstDayIndexInThisMonth ;
 		} 
 		else//如果本月有纪录
 		{
 			//则  本月没喝饮料的自觉天数 = 当前日期 - 第一天 - 喝了多少天
 			 int drinkDays = Integer.parseInt(cursor.getString(0));//多少天喝了
 			 conscienceDays =  DateUtil.getDateIndexInMonth(currentDate) - firstDayIndexInThisMonth 
-					 -drinkDays + 1;
+					 -drinkDays ;
 		}
 		if (!cursor.isClosed())
 			cursor.close();
@@ -374,13 +368,88 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		return firstDayIndexInThisMonth;
 	}
 	
-	// 那说明最后一天从currentDate算起
-	private int getcurrentDayIndexInThisMonth(Date currentDate)
+	
+	
+	/**
+	 * 
+	 * @param currentMonth  eg:2015-11-31
+	 *  currentMonth应该为这个月的最后一天
+	 * @return 这个currentMonth的所有分析数据
+	 */
+	public Report getAnalysis(String currentMonth)
 	{
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(currentDate);
-		return cal.get(Calendar.DAY_OF_MONTH);
+        SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor=db.rawQuery("select nodrinkdays,longestkeepday,morningtimes,afternoontimes,eveningtimes"
+				+ " from analysis where month = ?",new String[]{(currentMonth)});  
+
+		Report report = new Report();
+		
+		if(cursor.moveToFirst())
+		{
+			report.setDate(currentMonth);
+			report.setNoDrinkDays(cursor.getInt(0));
+			report.setLongestKeepDays(cursor.getInt(1));
+			report.setMorningtimes(cursor.getInt(2));
+			report.setAfternoontimes(cursor.getInt(3));
+			report.setEveningtimes(cursor.getInt(4));
+		}
+		//尽量不要返回空值
+		return report;
+		
 	}
 	
+	/**
+	 * 检查月报是否保存，如果没保存则插入月报
+	 */
+	public void checkAndinsertAnalysis()
+	{
+        SQLiteDatabase db = this.getReadableDatabase();
+		SharedPreferences setting =  ctx. getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
+		String lastLoginDate =setting.getString(Constant.Last_LOGIN_DATE, "");//得到上次登录时间
+		Date currentDate = DateUtil.StringToDate(lastLoginDate);
+		Date now = new Date();
+		if(!TextUtils.isEmpty(lastLoginDate))
+		{
+			//当当前时间和上次登录时间不处于同一个月份时
+			//now每次往前推一个月 如果这个月没有数据则插入 直到月份与上次登录时间处于同一个月
+			while (!DateUtil.isSameMonth(DateUtil.StringToDate(lastLoginDate), now))
+			{
+				now = DateUtil.getPreMonthLastDay(now);
+				//判断数据库中是否有当前月份的记录
+				Cursor cursor=db.rawQuery("select month from analysis where month = ?",new String[]{DateUtil.DateToStringNoHour(now)});  
+				if(cursor.moveToFirst() == false)
+				{
+					LogUtil.d("huang", "这个月份"+DateUtil.DateToString(now)+"没有数据,可以插入");
+					insertAnalysis(now);
+				}
+			
+			} 
+			
+		}
+		setting.edit().putString(Constant.Last_LOGIN_DATE, DateUtil.DateToString(new Date())).commit();
+	}
+	
+	
+	/**
+	 * 
+	 * @param currentMonth  eg:2015-11-31
+	 * @return 插入这个月的所有分析数据
+	 */
+	public void insertAnalysis(Date currentDate)
+	{
+        currentDate = DateUtil.getLastDateInMonth(currentDate);
+        int nodrinkDays = getNoDrinkDaysNumber(currentDate);
+        int longestKeepDays = getLongestKeepingDayOfMonth(currentDate);
+        int[] timeSection = getTimeSectionOfDrinktimesOfMonth(currentDate);
+        
+        SQLiteDatabase db = this.getWritableDatabase();
+		db.execSQL("insert into analysis values(null,?,?,?,?,?,?)",
+				new Object[]{DateUtil.DateToStringNoHour(currentDate),nodrinkDays,longestKeepDays
+				,timeSection[0],timeSection[1],timeSection[2]});
+		
+		LogUtil.d("huang", "insert Analysis"+DateUtil.DateToString(currentDate)+"success");
+	}
+	
+
 	
 }

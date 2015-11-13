@@ -1,6 +1,7 @@
 package com.huang.Activity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -30,6 +31,7 @@ import com.huang.nodrinkmore.R;
 import com.huang.util.AnimationUtil;
 import com.huang.util.Constant;
 import com.huang.util.DatabaseHelper;
+import com.huang.util.DateUtil;
 import com.huang.util.LogUtil;
 import com.huang.views.CircleIndicator.CircleIndicator;
 
@@ -212,7 +214,8 @@ public class WelcomeActivity extends Activity
 	public void init()
 	{
 		final SharedPreferences  setting = getSharedPreferences(Constant.SHARE_PS_Name, MODE_PRIVATE);
-		boolean isFirst= setting.getBoolean("isFirst", true);
+		boolean isFirst= setting.getBoolean(Constant.IS_FIRST, true);
+
 		//int versionCode = getVersionCode();
 		if(isFirst == true)
 		{
@@ -224,15 +227,17 @@ public class WelcomeActivity extends Activity
 					LogUtil.d(TAG, "第一次"+TAG);
 					DatabaseHelper databaseHelper = new DatabaseHelper(WelcomeActivity.this);
 					SQLiteDatabase db = databaseHelper.getWritableDatabase();
-					setting.edit().putBoolean("isFirst", false).commit();
+					setting.edit().putBoolean(Constant.IS_FIRST, false).commit();
 					
 					java.util.Date utilDate = new java.util.Date();  
 					java.sql.Date nowDay = new java.sql.Date(utilDate.getTime());  
-					setting.edit().putString("firstDay", nowDay.toString()).commit();//第一次使用应用的日期
+					setting.edit().putString(Constant.FIRST_DAY, nowDay.toString()).commit();//第一次使用应用的日期
 					
-					setting.edit().putInt("balance", Constant.BALANCE_INIT_VALUE).commit();//初始的自觉值
+					setting.edit().putInt(Constant.BALANCE, Constant.BALANCE_INIT_VALUE).commit();//初始的自觉值
 					
-					setting.edit().putInt("roundDay", 0).commit();// 奖励的级别 
+					setting.edit().putInt(Constant.ROUND_DAY, 0).commit();// 奖励的级别 
+					setting.edit().putString(Constant.Last_LOGIN_DATE, DateUtil.DateToStringNoHour(new Date())).commit();//记录登陆时间
+
 					jumptoMainActivity(Constant.BALANCE_INIT_VALUE);
 					
 					
@@ -252,7 +257,7 @@ public class WelcomeActivity extends Activity
 	private void jumptoMainActivity(int balance)
 	{
 		Intent toHomeIntent = new Intent(WelcomeActivity.this,MainActivity.class);
-		toHomeIntent.putExtra("balance", balance);
+		toHomeIntent.putExtra(Constant.BALANCE, balance);
 		startActivity(toHomeIntent);
 		finish();
 	}
@@ -264,7 +269,7 @@ public class WelcomeActivity extends Activity
 
 		@Override
 		public Object instantiateItem(ViewGroup container, int position)
-		{   //LogUtil.d("huang", "position="+position);
+		{   
 			View currentView = viewList.get(position);
 			container.addView(currentView);
 			return currentView;

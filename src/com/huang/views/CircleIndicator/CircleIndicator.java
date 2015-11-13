@@ -257,7 +257,7 @@ public class CircleIndicator extends View
 		        item.setX(x);
 				item.setY(y);
 
-		        LogUtil.d("huang", "item  x="+item.getX()+" y ="+item.getY());
+		      //  LogUtil.d("huang", "item  x="+item.getX()+" y ="+item.getY());
 			}
 		}
 		
@@ -333,7 +333,7 @@ public class CircleIndicator extends View
 	private void drawItem(Canvas canvas,ShapeHolder shapeHolder )
 	{
 		canvas.save();
-		LogUtil.d("huang", "shapeHolder x="+shapeHolder.getX() +" y="+shapeHolder.getY());
+		//LogUtil.d("huang", "shapeHolder x="+shapeHolder.getX() +" y="+shapeHolder.getY());
         canvas.translate(shapeHolder.getX(),shapeHolder.getY());
         shapeHolder.getShape().draw(canvas);
         canvas.restore();

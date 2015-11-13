@@ -1,20 +1,14 @@
 package com.huang.Activity;
 
-import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnCancelListener;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,16 +28,13 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.huang.model.Habit;
 import com.huang.nodrinkmore.R;
-import com.huang.service.ForeService;
 import com.huang.service.WidgetService;
 import com.huang.service.WidgetService.UpdateViewBinder;
 import com.huang.util.AnimationUtil;
@@ -115,13 +106,13 @@ public class MainActivity extends ActionBarActivity
 		@Override
 		public void onServiceDisconnected(ComponentName name)
 		{
-			LogUtil.d("huang", "onServiceDisconnected");
+			//LogUtil.d("huang", "onServiceDisconnected");
 		}
 		
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service)
 		{
-			LogUtil.d("huang", "onServiceConnected");
+			//LogUtil.d("huang", "onServiceConnected");
 			updateViewBinder = (UpdateViewBinder)service;
 	
 			
@@ -212,16 +203,16 @@ public class MainActivity extends ActionBarActivity
 		if(keepDay !=0 && (keepDay % Constant.BALANCE_REWARD_VALUE == 0))
 		{
 			int roundToday = keepDay / Constant.BALANCE_REWARD_VALUE;
-			int roundDay = setting.getInt("roundDay", 0);
+			int roundDay = setting.getInt(Constant.ROUND_DAY, 0);
 			if(roundToday != roundDay)	//这次奖励还没有加过
 			{
 				Toast.makeText(this, "已保持3天,自觉值+1,加油!", Toast.LENGTH_SHORT).show();
 				calculateBalance(true);
-				setting.edit().putInt("roundDay", roundToday).commit();
+				setting.edit().putInt(Constant.ROUND_DAY, roundToday).commit();
 			}
 			
 		}
-		
+		databaseHelper.checkAndinsertAnalysis();
 //		if(!TextUtils.equals(text, "0 天"))
 //		{
 //	
@@ -261,7 +252,7 @@ public class MainActivity extends ActionBarActivity
 				upAnimation.setDuration(500);
 				upAnimation.setFillAfter(true);
 				upAnimation.setZAdjustment(Animation.ZORDER_TOP);
-				upAnimation.setInterpolator(new AccelerateDecelerateInterpolator());//new BounceInterpolator()
+				upAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
 				upAnimation.setAnimationListener(new AnimationListener()
 				{
 					@Override
@@ -318,12 +309,6 @@ public class MainActivity extends ActionBarActivity
 						calculateBalance(false);
 					}
 				});
-//				dialog.setNegativeButton("放我一马 !", new DialogInterface.OnClickListener() {
-//					public void onClick(DialogInterface dialog, int which) 
-//					{
-//						calculateBalance(false);
-//					}
-//				});
 				dialog.create();
 				dialog.show();
 				
@@ -530,7 +515,7 @@ public class MainActivity extends ActionBarActivity
 	 */
 	private void calculateBalance(boolean isAdd)
 	{
-			int balance = setting.getInt("balance", Constant.BALANCE_INIT_VALUE);
+			int balance = setting.getInt(Constant.BALANCE, Constant.BALANCE_INIT_VALUE);
 			balance = isAdd == true ? balance + 1 : balance - 1 ;
 			final int balanceFinal = balance;
 			AnimationSet animation = isAdd == true ? 
@@ -550,7 +535,7 @@ public class MainActivity extends ActionBarActivity
 				@Override
 				public void onAnimationEnd(Animation animation)
 				{	//hanlder the balance after the animation end
-					setting.edit().putInt("balance", balanceFinal).commit();
+					setting.edit().putInt(Constant.BALANCE, balanceFinal).commit();
 					balanceText.setText(balanceFinal+"");
 					balanceTextSetColor(balanceFinal);
 				}
@@ -587,5 +572,7 @@ public class MainActivity extends ActionBarActivity
 		LogUtil.d("huang", "onDestroy unbindService");
 		super.onDestroy();
 	}
+	
+	
 
 }
