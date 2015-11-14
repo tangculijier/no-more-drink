@@ -8,7 +8,9 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.opengl.Visibility;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,50 +49,82 @@ public class MonthReportActivity extends Activity implements
 	
 	DatabaseHelper databaseHelper;
 	
-	
 	Calendar calendar ;
 	
 	Date currentTime ;
 	/**
-	 * 时间区间
+	 * 所属月份-title
+	 */
+	private String currentMonth;
+	/**
+	 * 所属月份-title textview
 	 */
 	private TextView currentMonthTextView;  
 	/**
-	 * 当前月报时间年份和月份
+	 * 所属月份-title的字体颜色
 	 */
-	private String currentMonth;
-
-	private TextView noDrinkDaysTextView;  
+	private int currentMonthColor;
 	/**
 	 * 自觉天数(没有喝饮料的天数)
 	 */
 	private int noDrinkDays = 0;
-
-	private TextView monthSumOfDrinkTimesTextView; // 月饮用总量
 	/**
-	 * 月饮用总量
+	 * 显示自觉天数即不喝饮料的天数的textview
 	 */
-	private int monthSumOfDrinkTimes = 0;
+	private TextView noDrinkDaysTextView;  
 
-	private TextView longestKeepingDayOfMonthTextView; // 最长保持纪录
+	
+	
+
+	
 	/**
 	 * 最长保持纪录(天)
 	 */
 	private int longestKeepingDayOfMonth = 0;
+	/**
+	 * 最长保持纪录的textiview
+	 */
+	private TextView longestKeepingDayOfMonthTextView; // 最长保持纪录
 
+
+	/**
+	 * 月饮用总量
+	 */
+	private int monthSumOfDrinkTimes = 0;
+	
+	/**
+	 * 隐藏的cup 默认gone
+	 * 一个月如果没有任何记录则显示cup
+	 */
+	ImageView cup;
 	/**
 	 * 底部的小提示
 	 */
 	private TextView tipsTextView;
 	
+	/**
+	 *  喝饮料时间数组分别代表早上次数，中午次数，晚上次数
+	 */
 	private int partTimeOfDrinktimesOfMonth[] ;
 
-	private PieChart mChart;// 喝饮料时间分布图表
-	private Typeface tf;// 字体
+	/**
+	 * 喝饮料时间分布图表
+	 */
+	private PieChart mChart;
+	private Typeface tf;
 
 	protected String[] sectionString = new String[] { "早上", "下午", "晚上" };
+	/**
+	 * 分布图的颜色
+	 */
 	protected int[] sectionColor;
-
+	
+	/**
+	 * mDatePicker初始年份和月份
+	 */
+	int curyear = -1;
+	int curmonth = -1;
+	
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -109,6 +144,7 @@ public class MonthReportActivity extends Activity implements
 		currentMonthTextView = (TextView) findViewById(R.id.currentMonth);
 		noDrinkDaysTextView = (TextView) findViewById(R.id.noDrinkDays);
 		longestKeepingDayOfMonthTextView = (TextView) findViewById(R.id.longestKeepingDayOfMonth);
+		cup = (ImageView)findViewById(R.id.cup);
 		tipsTextView = (TextView)findViewById(R.id.tips);
 		mChart = (PieChart) findViewById(R.id.pie_chart);
 		currentMonthTextView.setOnClickListener(new OnClickListener()
@@ -117,11 +153,15 @@ public class MonthReportActivity extends Activity implements
 			@Override
 			public void onClick(View v)
 			{
-				LogUtil.d("huang","month picker");
 				Calendar cal = Calendar.getInstance();
 				MyDatePicker mDatePicker = new MyDatePicker(MonthReportActivity.this,Datelistener, Calendar.getInstance());
 				mDatePicker.setIcon(R.drawable.datepicker_icon);
 				mDatePicker.setTitle(R.string.report_datepicker_dialog_title);
+				if(curyear != -1 && curmonth != -1)//如果都不是初始值的话将mDatePicker初始时间置为当前所选
+				{
+					mDatePicker.updateDate(curyear, curmonth, 1);
+				}
+		
 				mDatePicker.show();
 			}
 		});
@@ -130,19 +170,30 @@ public class MonthReportActivity extends Activity implements
     {
         @Override
         public void onDateSet(DatePicker view, int myyear, int monthOfYear,int dayOfMonth) {
+        	
         	//得到所选月份的最后一天
         	monthOfYear += 1 ;
         	String monthOfYearStr = monthOfYear < 10 ? ( "0" + monthOfYear ): monthOfYear + "";
             String pickDateStr = myyear + "-" + monthOfYearStr + "-" + "01";
             Date pickDate = DateUtil.getLastDateInMonth(DateUtil.StringToDate(pickDateStr)); 
             LogUtil.d("huang", "pickDate="+pickDate);
-            Report report = databaseHelper.getAnalysis(DateUtil.DateToStringNoHour(pickDate));
+            final Report report = databaseHelper.getAnalysis(DateUtil.DateToStringNoHour(pickDate));
             if(!TextUtils.isEmpty(report.getDate()))
             {
             	//刷新所有
             	currentMonthTextView.setText(myyear + "/" + monthOfYearStr);
-            	LogUtil.d("huang", "这个月"+report.getDate()+"数据为");
-            	LogUtil.d("huang", "getNoDrinkDays"+report.getNoDrinkDays());
+				longestKeepingDayOfMonthTextView.setText(MyTextUtil.highLightNumber(longestKeepingDayOfMonthTextView, 
+						report.getLongestKeepDays()+"", currentMonthColor));
+
+				noDrinkDaysTextView.setText(MyTextUtil.highLightNumber(noDrinkDaysTextView, 
+						report.getNoDrinkDays()+"", currentMonthColor));
+
+            	int[] sectionDate = new int[]{report.getMorningtimes(),
+            			report.getAfternoontimes(),report.getEveningtimes()}; 
+    			initChartData(sectionDate);
+    			curyear = myyear;
+    			curmonth = monthOfYear - 1;
+    		
             }
             else
             {
@@ -150,7 +201,6 @@ public class MonthReportActivity extends Activity implements
             }
             
         }
-        
     };
 	public void initData()
 	{
@@ -170,10 +220,9 @@ public class MonthReportActivity extends Activity implements
 		currentMonthTextView.setText(calendar.get(Calendar.YEAR)+"/"+monthStr);
 		currentMonthTextView.setTypeface(tf,Typeface.BOLD);
 
-		noDrinkDaysTextView.setText(MyTextUtil.getSuperscriptSpan(noDrinkDaysTextView.getText().toString(),
-				noDrinkDays+"",getResources().getColor(R.color.green_dark)));
-
-		longestKeepingDayOfMonthTextView.setText(MyTextUtil.getSuperscriptSpan(longestKeepingDayOfMonthTextView.getText().toString(),longestKeepingDayOfMonth+"",getResources().getColor(R.color.green_dark)));
+		currentMonthColor = getResources().getColor(R.color.green_dark);
+		noDrinkDaysTextView.setText(MyTextUtil.highLightNumber(noDrinkDaysTextView, noDrinkDays+"", currentMonthColor));
+		longestKeepingDayOfMonthTextView.setText(MyTextUtil.highLightNumber(longestKeepingDayOfMonthTextView, longestKeepingDayOfMonth+"", currentMonthColor));
 
 		initChart();
 
@@ -200,7 +249,7 @@ public class MonthReportActivity extends Activity implements
 		mChart.setUsePercentValues(true);// 是否带百分号
 		mChart.animateX(1400, Easing.EasingOption.EaseInOutQuad);
 		
-		initChartData();
+		initChartData(partTimeOfDrinktimesOfMonth);
 	}
 
 	private SpannableString generateCenterSpannableText()
@@ -221,9 +270,10 @@ public class MonthReportActivity extends Activity implements
 	}
 	
 	
-	private void initChartData()
+	private void initChartData(int[] sectionData)
 	{
 
+		boolean isAllZero = true;
 		//数据在饼图上的文字列表
 		ArrayList<String> yValStringArray = new ArrayList<String>();
 		//底部说明列表
@@ -236,52 +286,87 @@ public class MonthReportActivity extends Activity implements
 		int maxDrinkTimes = 0;
 		int maxIndex = -1;
 		//添加数据
-		for(int i = 0 , j = 0;i < partTimeOfDrinktimesOfMonth.length ; i++)
+		for(int i = 0 , j = 0;i < sectionData.length ; i++)
 		{
-			if(partTimeOfDrinktimesOfMonth[i] != 0 )//说明此时间段有记录
+			if(sectionData[i] != 0 )//说明此时间段有记录
 			{
-				if(partTimeOfDrinktimesOfMonth[i] > maxDrinkTimes)
+				if(sectionData[i] > maxDrinkTimes)
 				{
-					maxDrinkTimes = partTimeOfDrinktimesOfMonth[i] ;
+					maxDrinkTimes = sectionData[i] ;
 					maxIndex = i;
 				}
-				yVals.add(new Entry(partTimeOfDrinktimesOfMonth[i], j++));
-				yValStringArray.add(sectionString[i]+" "+partTimeOfDrinktimesOfMonth[i] + "瓶");//拼接成 早上:5 瓶
+				yVals.add(new Entry(sectionData[i], j++));
+				yValStringArray.add(sectionString[i]+" "+sectionData[i] + "瓶");//拼接成 早上:5 瓶
 				legendStringArray.add(sectionString[i]);
 				colors.add(sectionColor[i]);
+				isAllZero = false;
 			}
 		
 		}
 		makeTips(maxIndex);//give the suggestion of drink
+		if(isAllZero == false)
+		{
+			
 
-		PieDataSet dataSet = new PieDataSet(yVals, "");
-		dataSet.setSliceSpace(5f);// 设置每个薄片之间的间距
-		dataSet.setSelectionShift(12f);// 点击后放大倍数
-		// add a lot of colors
+			PieDataSet dataSet = new PieDataSet(yVals, "");
+			dataSet.setSliceSpace(5f);// 设置每个薄片之间的间距
+			dataSet.setSelectionShift(12f);// 点击后放大倍数
+			// add a lot of colors
 
-		dataSet.setColors(colors);
+			dataSet.setColors(colors);
+			
+			PieData data = new PieData(yValStringArray, dataSet);
+			data.setValueFormatter(new PercentFormatter());
+			data.setValueTextSize(12f);
+			data.setValueTextColor(Color.BLACK);
+			data.setValueTypeface(tf);
+
+			mChart.setData(data);
+
+			// undo all highlights
+			mChart.highlightValues(null);
+			
+			// 类别说明
+			Legend legend = mChart.getLegend();
+			legend.setPosition(LegendPosition.BELOW_CHART_CENTER);
+			legend.setXEntrySpace(7f);
+			legend.setYEntrySpace(0f);
+			legend.setTextSize(12f);
+			legend.setYOffset(5f);
+			legend.setCustom(colors, legendStringArray);//自定义的底部分类说明
+			
+			mChart.invalidate();
+			showMyChart();
 		
-		PieData data = new PieData(yValStringArray, dataSet);
-		data.setValueFormatter(new PercentFormatter());
-		data.setValueTextSize(12f);
-		data.setValueTextColor(Color.BLACK);
-		data.setValueTypeface(tf);
-
-		mChart.setData(data);
-
-		// undo all highlights
-		mChart.highlightValues(null);
+		}
+		else
+		{
+			hideMyChart();
+		}
 		
-		// 类别说明
-		Legend legend = mChart.getLegend();
-		legend.setPosition(LegendPosition.BELOW_CHART_CENTER);
-		legend.setXEntrySpace(7f);
-		legend.setYEntrySpace(0f);
-		legend.setTextSize(12f);
-		legend.setYOffset(5f);
-		legend.setCustom(colors, legendStringArray);//自定义的底部分类说明
 	}
 
+	
+	
+	private void showMyChart()
+	{
+		if(mChart.getVisibility() == View.GONE)
+		{
+			cup.setVisibility(View.GONE);
+			mChart.setVisibility(View.VISIBLE);
+			
+		}
+	}
+	private void hideMyChart()
+	{
+		if(mChart.getVisibility() == View.VISIBLE)
+		{
+			cup.setVisibility(View.VISIBLE);
+			mChart.setVisibility(View.GONE);
+		
+		}
+	
+	}
 	private void makeTips(int maxIndex)//根据哪个时段喝的最多给出健康提示
 	{
 		String tips = "";
@@ -299,7 +384,8 @@ public class MonthReportActivity extends Activity implements
 			case 2://晚上喝的最多
 					tips +="晚上喝太多饮料不宜于睡眠。";
 					break;
-			default:break;
+			default:
+					break;
 		}
 		tipsTextView.setText(tips);
 		

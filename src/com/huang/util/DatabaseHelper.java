@@ -28,7 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	/**
 	 * 数据库的版本
 	 */
-	private static final int version = 1;//数据库版本
+	private static final int version = 2;//数据库版本
 	
 	public static final String CREATE_DRINK = "create table habit (id integer PRIMARY KEY AUTOINCREMENT, date timestamp ,type SMALLINT);";
 
@@ -67,7 +67,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
-		// TODO Auto-generated method stub
+		db.execSQL("DROP TABLE IF EXISTS analysis");  
+		db.execSQL(CREATE_ANALYSIS);
 		
 	}
 	
@@ -369,35 +370,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	}
 	
 	
-	
-	/**
-	 * 
-	 * @param currentMonth  eg:2015-11-31
-	 *  currentMonth应该为这个月的最后一天
-	 * @return 这个currentMonth的所有分析数据
-	 */
-	public Report getAnalysis(String currentMonth)
-	{
-        SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor=db.rawQuery("select nodrinkdays,longestkeepday,morningtimes,afternoontimes,eveningtimes"
-				+ " from analysis where month = ?",new String[]{(currentMonth)});  
 
-		Report report = new Report();
-		
-		if(cursor.moveToFirst())
-		{
-			report.setDate(currentMonth);
-			report.setNoDrinkDays(cursor.getInt(0));
-			report.setLongestKeepDays(cursor.getInt(1));
-			report.setMorningtimes(cursor.getInt(2));
-			report.setAfternoontimes(cursor.getInt(3));
-			report.setEveningtimes(cursor.getInt(4));
-		}
-		//尽量不要返回空值
-		return report;
-		
-	}
-	
 	/**
 	 * 检查月报是否保存，如果没保存则插入月报
 	 */
@@ -405,14 +378,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	{
         SQLiteDatabase db = this.getReadableDatabase();
 		SharedPreferences setting =  ctx. getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
-		String lastLoginDate =setting.getString(Constant.Last_LOGIN_DATE, "");//得到上次登录时间
-		Date currentDate = DateUtil.StringToDate(lastLoginDate);
+		String lastLoginDateStr =setting.getString(Constant.Last_LOGIN_DATE, "");//得到上次登录时间
+		Date lastLoginDate= DateUtil.StringToDate(lastLoginDateStr);
 		Date now = new Date();
-		if(!TextUtils.isEmpty(lastLoginDate))
+		if(!TextUtils.isEmpty(lastLoginDateStr))
 		{
 			//当当前时间和上次登录时间不处于同一个月份时
 			//now每次往前推一个月 如果这个月没有数据则插入 直到月份与上次登录时间处于同一个月
-			while (!DateUtil.isSameMonth(DateUtil.StringToDate(lastLoginDate), now))
+			while (!DateUtil.isSameMonth(lastLoginDate, now))
 			{
 				now = DateUtil.getPreMonthLastDay(now);
 				//判断数据库中是否有当前月份的记录
@@ -451,5 +424,33 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	}
 	
 
+	
+	/**
+	 * 
+	 * @param currentMonth  eg:2015-11-31
+	 *  currentMonth应该为这个月的最后一天
+	 * @return 这个currentMonth的所有分析数据
+	 */
+	public Report getAnalysis(String currentMonth)
+	{
+        SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor=db.rawQuery("select nodrinkdays,longestkeepday,morningtimes,afternoontimes,eveningtimes"
+				+ " from analysis where month = ?",new String[]{(currentMonth)});  
+
+		Report report = new Report();
+		
+		if(cursor.moveToFirst())
+		{
+			report.setDate(currentMonth);
+			report.setNoDrinkDays(cursor.getInt(0));
+			report.setLongestKeepDays(cursor.getInt(1));
+			report.setMorningtimes(cursor.getInt(2));
+			report.setAfternoontimes(cursor.getInt(3));
+			report.setEveningtimes(cursor.getInt(4));
+		}
+		//尽量不要返回空值
+		return report;
+		
+	}
 	
 }
