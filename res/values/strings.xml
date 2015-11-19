@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- activity -->
-    <string name="app_name">不喝饮料</string>
+     <!-- App -->
+        <string name="app_name">不喝饮料</string>
+                <string name="tip">提示</string>
+    <!-- Mainactivity -->
+
     <string name="title.first">不喝饮料已保持</string>
     <string name="action_settings">Settings</string>
     <string name="button.text.drink">喝了一瓶饮料</string>
@@ -18,12 +21,12 @@
 	<string name="report.text.conscienceDays">自觉天数\n0 天</string>
 	<string name="report.text.longestKeepingDayOfMonth">最长坚持\n0 天</string>
 	<string name="report.datepicker.dialog.title">请选择月份</string>
-	
+	<string name="report.dialog.text">图表功能只是为了直观了解喝饮料的情况，从而采取正确的方式减少次数。</string>
 	
 	<!-- viewpage -->
 	<string name="viewpage.first.title">远离饮料</string>
 	<string name="viewpage.first.note">帮你克制生活中的陋习\n「喝饮料」</string>
-		<string name="viewpage.second.title">「自觉值」</string>
-		<string name="viewpage.second.headline">用来衡量你的表现</string>
-		<string name="viewpage.second.button">Go</string>
+	<string name="viewpage.second.title">「自觉值」</string>
+	<string name="viewpage.second.headline">用来衡量你的表现</string>
+	<string name="viewpage.second.button">Go</string>
 </resources>

@@ -5,12 +5,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.AlteredCharSequence;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -37,6 +40,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.huang.model.Report;
 import com.huang.nodrinkmore.R;
+import com.huang.util.AppConst;
 import com.huang.util.DatabaseHelper;
 import com.huang.util.DateUtil;
 import com.huang.util.LogUtil;
@@ -130,9 +134,27 @@ public class MonthReportActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// to title
 		setContentView(R.layout.month_report);
+		ifFirstAnalysis();
 		findById();
 		initData();
 
+	}
+
+	public void ifFirstAnalysis()
+	{
+		SharedPreferences setting = getSharedPreferences(AppConst.SHARE_PS_Name, MODE_PRIVATE);
+		boolean isFirstAnalysis= setting.getBoolean(AppConst.IS_FIRST_ANANLYSIS, true);
+		if(isFirstAnalysis == true)
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.tip);
+			builder.setMessage(R.string.report_dialog_text);
+			builder.setIcon(R.drawable.tip);
+			builder.setPositiveButton("我知道了", null);
+			builder.create().show();
+			setting.edit().putBoolean(AppConst.IS_FIRST_ANANLYSIS, false).commit();
+			
+		}
 	}
 
 	public void findById()
@@ -209,7 +231,7 @@ public class MonthReportActivity extends Activity implements
 		
 		calendar = Calendar.getInstance();
 		currentTime = calendar.getTime();
-		databaseHelper = new DatabaseHelper(this);
+		databaseHelper = DatabaseHelper.getInstance(this);
 		
 		noDrinkDays = databaseHelper.getNoDrinkDaysNumber(currentTime);
 		//monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(currentTime);

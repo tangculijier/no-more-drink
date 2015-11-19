@@ -67,7 +67,7 @@ public class WidgetProvider extends AppWidgetProvider
 		LogUtil.d("huang", "WidgetProvider onReceive");
 		super.onReceive(context, intent);
 		
-		DatabaseHelper databaseHelper = new DatabaseHelper(context);
+		DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
 		String[] keepDaysInfo = databaseHelper.getKeepTime();
 		String widgetShowStr = "已保持\n"+keepDaysInfo[0]+"天";
 		LogUtil.d("huang", "onReceive updateViews"+widgetShowStr);

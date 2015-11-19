@@ -23,7 +23,23 @@ import com.huang.model.Report;
  */
 public class DatabaseHelper extends SQLiteOpenHelper
 {
-	private final String TAG = this.getClass().getSimpleName();
+	private static DatabaseHelper myInstance = null;
+	
+	/**
+	 * 采用单例模式
+	 * @param context
+	 * @return 
+	 */
+	public synchronized static DatabaseHelper getInstance(Context context)
+	{
+		if(myInstance == null)
+		{
+			myInstance = new DatabaseHelper(context, DB_NAME, null, DB_VERSION);
+		}
+		return myInstance;
+		
+	}
+	
 	/**
 	 * 数据库的名称
 	 */
@@ -31,7 +47,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	/**
 	 * 数据库的版本
 	 */
-	private static final int version = 2;//数据库版本
+	private static final int DB_VERSION = 2;//数据库版本
+	
 	
 	private static final String TEXT_TYPE = " TEXT";
 	private static final String DATE_TYPE_1 = " timestamp";
@@ -68,14 +85,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	public DatabaseHelper(Context ctx)
 	{
-		super(ctx, DB_NAME, null, version);
-		this.ctx = ctx;
+		super(ctx, DB_NAME, null, DB_VERSION);
 	}
 	public DatabaseHelper(Context context, String name, CursorFactory factory,
 			int version)
 	{
 		super(context, name, factory, version);
-		// TODO Auto-generated constructor stub
+		this.ctx = context;
+		myInstance = this;
 	}
 	
 
@@ -169,7 +186,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			Habit habit = getRecentDrinkRecord();
 			if(habit == null)//no record
 			{
-				SharedPreferences  setting =ctx.getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
+				SharedPreferences  setting =ctx.getSharedPreferences(AppConst.SHARE_PS_Name, ctx.MODE_PRIVATE);
 				String firstDay = setting.getString("firstDay", "");
 				res[0] = DateUtil.daysBetween(DateUtil.StringToDate(firstDay), nowDay);
 				recordNumber = "0";
@@ -384,7 +401,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	public int getFirstDayIndexInThisMonth(Date currentDate)
 	{
 		int firstDayIndexInThisMonth;
-		SharedPreferences  setting =ctx.getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
+		SharedPreferences  setting =ctx.getSharedPreferences(AppConst.SHARE_PS_Name, ctx.MODE_PRIVATE);
 		String firstDay = setting.getString("firstDay", "");//example 2015-11-04
 		
 		Calendar cal = Calendar.getInstance();
@@ -409,8 +426,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	public void checkAndinsertAnalysis()
 	{
         SQLiteDatabase db = this.getReadableDatabase();
-		SharedPreferences setting =  ctx. getSharedPreferences(Constant.SHARE_PS_Name, ctx.MODE_PRIVATE);
-		String lastLoginDateStr =setting.getString(Constant.Last_LOGIN_DATE, "");//得到上次登录时间
+		SharedPreferences setting =  ctx. getSharedPreferences(AppConst.SHARE_PS_Name, ctx.MODE_PRIVATE);
+		String lastLoginDateStr =setting.getString(AppConst.Last_LOGIN_DATE, "");//得到上次登录时间
 		Date lastLoginDate= DateUtil.StringToDate(lastLoginDateStr);
 		Date now = new Date();
 		if(!TextUtils.isEmpty(lastLoginDateStr))
@@ -431,7 +448,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			} 
 			
 		}
-		setting.edit().putString(Constant.Last_LOGIN_DATE, DateUtil.DateToString(new Date())).commit();
+		setting.edit().putString(AppConst.Last_LOGIN_DATE, DateUtil.DateToString(new Date())).commit();
 	}
 	
 	

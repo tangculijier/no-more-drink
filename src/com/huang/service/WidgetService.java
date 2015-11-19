@@ -70,7 +70,7 @@ public class WidgetService extends Service
 	public void updateViews()
 	{
 	
-		DatabaseHelper databaseHelper = new DatabaseHelper(this);
+		DatabaseHelper databaseHelper =  DatabaseHelper.getInstance(this);
 		String[] keepDaysInfo = databaseHelper.getKeepTime();
 		String widgetShowStr = "已保持\n"+keepDaysInfo[0]+"天";
 		Log.d("huang", "TimerService updateViews"+widgetShowStr);

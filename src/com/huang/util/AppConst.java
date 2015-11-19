@@ -3,7 +3,7 @@ package com.huang.util;
 /**
  * 保存一些不变的值
  */
-public class Constant
+public class AppConst
 {
 
 	/**
@@ -26,4 +26,5 @@ public class Constant
 	public static final String  FIRST_DAY= "firstDay";
 	public static final String  BALANCE = "balance";
 	public static final String  ROUND_DAY = "roundDay";
+	public static final String  IS_FIRST_ANANLYSIS = "isFirstAnalysis";
 }

@@ -29,7 +29,7 @@ import android.widget.RelativeLayout;
 
 import com.huang.nodrinkmore.R;
 import com.huang.util.AnimationUtil;
-import com.huang.util.Constant;
+import com.huang.util.AppConst;
 import com.huang.util.DatabaseHelper;
 import com.huang.util.DateUtil;
 import com.huang.util.LogUtil;
@@ -213,8 +213,8 @@ public class WelcomeActivity extends Activity
 	}
 	public void init()
 	{
-		final SharedPreferences  setting = getSharedPreferences(Constant.SHARE_PS_Name, MODE_PRIVATE);
-		boolean isFirst= setting.getBoolean(Constant.IS_FIRST, true);
+		final SharedPreferences  setting = getSharedPreferences(AppConst.SHARE_PS_Name, MODE_PRIVATE);
+		boolean isFirst= setting.getBoolean(AppConst.IS_FIRST, true);
 
 		//int versionCode = getVersionCode();
 		if(isFirst == true)
@@ -225,20 +225,22 @@ public class WelcomeActivity extends Activity
 				public void onClick(View v)
 				{
 					LogUtil.d(TAG, "第一次"+TAG);
-					DatabaseHelper databaseHelper = new DatabaseHelper(WelcomeActivity.this);
+					//在这里初始化数据库
+					DatabaseHelper databaseHelper = DatabaseHelper.getInstance(WelcomeActivity.this);
 					SQLiteDatabase db = databaseHelper.getWritableDatabase();
-					setting.edit().putBoolean(Constant.IS_FIRST, false).commit();
+					
+					setting.edit().putBoolean(AppConst.IS_FIRST, false).commit();
 					
 					java.util.Date utilDate = new java.util.Date();  
 					java.sql.Date nowDay = new java.sql.Date(utilDate.getTime());  
-					setting.edit().putString(Constant.FIRST_DAY, nowDay.toString()).commit();//第一次使用应用的日期
+					setting.edit().putString(AppConst.FIRST_DAY, nowDay.toString()).commit();//第一次使用应用的日期
 					
-					setting.edit().putInt(Constant.BALANCE, Constant.BALANCE_INIT_VALUE).commit();//初始的自觉值
+					setting.edit().putInt(AppConst.BALANCE, AppConst.BALANCE_INIT_VALUE).commit();//初始的自觉值
 					
-					setting.edit().putInt(Constant.ROUND_DAY, 0).commit();// 奖励的级别 
-					setting.edit().putString(Constant.Last_LOGIN_DATE, DateUtil.DateToStringNoHour(new Date())).commit();//记录登陆时间
+					setting.edit().putInt(AppConst.ROUND_DAY, 0).commit();// 奖励的级别 
+					setting.edit().putString(AppConst.Last_LOGIN_DATE, DateUtil.DateToStringNoHour(new Date())).commit();//记录登陆时间
 
-					jumptoMainActivity(Constant.BALANCE_INIT_VALUE);
+					jumptoMainActivity(AppConst.BALANCE_INIT_VALUE);
 					
 					
 				}
@@ -247,7 +249,7 @@ public class WelcomeActivity extends Activity
 		else
 		{
 			LogUtil.d(TAG, "not 第一次"+TAG);
-			balance = setting.getInt("balance", Constant.BALANCE_INIT_VALUE);
+			balance = setting.getInt("balance", AppConst.BALANCE_INIT_VALUE);
 			jumptoMainActivity(balance);
 		
 		
@@ -257,7 +259,7 @@ public class WelcomeActivity extends Activity
 	private void jumptoMainActivity(int balance)
 	{
 		Intent toHomeIntent = new Intent(WelcomeActivity.this,MainActivity.class);
-		toHomeIntent.putExtra(Constant.BALANCE, balance);
+		toHomeIntent.putExtra(AppConst.BALANCE, balance);
 		startActivity(toHomeIntent);
 		finish();
 	}

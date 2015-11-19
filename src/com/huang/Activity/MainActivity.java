@@ -38,7 +38,7 @@ import com.huang.nodrinkmore.R;
 import com.huang.service.WidgetService;
 import com.huang.service.WidgetService.UpdateViewBinder;
 import com.huang.util.AnimationUtil;
-import com.huang.util.Constant;
+import com.huang.util.AppConst;
 import com.huang.util.DatabaseHelper;
 import com.huang.util.LogUtil;
 import com.huang.views.CalendarView;
@@ -172,7 +172,7 @@ public class MainActivity extends ActionBarActivity
 			}
 		});
 		
-		databaseHelper = new DatabaseHelper(this);
+		databaseHelper = DatabaseHelper.getInstance(this);
 	
 		String[] keepDaysInfo = databaseHelper.getKeepTime();
 	//	LogUtil.i("huang", "keepDaysInfo"+keepDaysInfo[0]+" "+keepDaysInfo[1]);
@@ -197,18 +197,18 @@ public class MainActivity extends ActionBarActivity
 
 		gestureDetector = new GestureDetector(MainActivity.this,onGestureListener);  
 		
-		setting = getSharedPreferences(Constant.SHARE_PS_Name, MODE_PRIVATE);
+		setting = getSharedPreferences(AppConst.SHARE_PS_Name, MODE_PRIVATE);
 		
 		
-		if(keepDay !=0 && (keepDay % Constant.BALANCE_REWARD_VALUE == 0))
+		if(keepDay !=0 && (keepDay % AppConst.BALANCE_REWARD_VALUE == 0))
 		{
-			int roundToday = keepDay / Constant.BALANCE_REWARD_VALUE;
-			int roundDay = setting.getInt(Constant.ROUND_DAY, 0);
+			int roundToday = keepDay / AppConst.BALANCE_REWARD_VALUE;
+			int roundDay = setting.getInt(AppConst.ROUND_DAY, 0);
 			if(roundToday != roundDay)	//这次奖励还没有加过
 			{
 				Toast.makeText(this, "已保持3天,自觉值+1,加油!", Toast.LENGTH_SHORT).show();
 				calculateBalance(true);
-				setting.edit().putInt(Constant.ROUND_DAY, roundToday).commit();
+				setting.edit().putInt(AppConst.ROUND_DAY, roundToday).commit();
 			}
 			
 		}
@@ -361,7 +361,7 @@ public class MainActivity extends ActionBarActivity
 				float velocityY)
 		{
 			float x = e2.getX() - e1.getX();
-			float y = e2.getY() - e1.getY();
+			//float y = e2.getY() - e1.getY();
 			
 			if (x > 10)//right gesture
 			{
@@ -515,7 +515,7 @@ public class MainActivity extends ActionBarActivity
 	 */
 	private void calculateBalance(boolean isAdd)
 	{
-			int balance = setting.getInt(Constant.BALANCE, Constant.BALANCE_INIT_VALUE);
+			int balance = setting.getInt(AppConst.BALANCE, AppConst.BALANCE_INIT_VALUE);
 			balance = isAdd == true ? balance + 1 : balance - 1 ;
 			final int balanceFinal = balance;
 			AnimationSet animation = isAdd == true ? 
@@ -535,7 +535,7 @@ public class MainActivity extends ActionBarActivity
 				@Override
 				public void onAnimationEnd(Animation animation)
 				{	//hanlder the balance after the animation end
-					setting.edit().putInt(Constant.BALANCE, balanceFinal).commit();
+					setting.edit().putInt(AppConst.BALANCE, balanceFinal).commit();
 					balanceText.setText(balanceFinal+"");
 					balanceTextSetColor(balanceFinal);
 				}
