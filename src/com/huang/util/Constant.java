@@ -20,7 +20,7 @@ public class Constant
 	/**
 	 * sharepreneces key - value
 	 */
-	public final static String  SHARE_PS_Name = "SETTING"; 
+	public final static String  SHARE_PS_Name = "com.huang.nodrink.setting"; 
 	public static final String  Last_LOGIN_DATE = "lastLoginDate";
 	public static final String  IS_FIRST = "isFirst";
 	public static final String  FIRST_DAY= "firstDay";

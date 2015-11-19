@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,6 +15,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import com.huang.model.Habit;
+import com.huang.model.ModelReaderContract.AnalysisEntry;
+import com.huang.model.ModelReaderContract.HabitEntry;
 import com.huang.model.Report;
 /**
  * 操纵sqlite的工具类
@@ -30,10 +33,36 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	 */
 	private static final int version = 2;//数据库版本
 	
-	public static final String CREATE_DRINK = "create table habit (id integer PRIMARY KEY AUTOINCREMENT, date timestamp ,type SMALLINT);";
+	private static final String TEXT_TYPE = " TEXT";
+	private static final String DATE_TYPE_1 = " timestamp";
+	private static final String DATE_TYPE_2 = " date";
+	private static final String INT_TYPE_1 = " SMALLINT";
+	private static final String INT_TYPE_2 = " INT";
+	private static final String COMMA_SEP = ",";
+	
+	private static final String SQL_CREATE_HABIT =
+		    "CREATE TABLE " + HabitEntry.TABLE_NAME + " (" +
+		    HabitEntry.COLUMN_NAME_ENTRY_ID + " INTEGER PRIMARY KEY," +
+    		HabitEntry.COLUMN_NAME_DATE + DATE_TYPE_1 + COMMA_SEP +
+		    HabitEntry.COLUMN_NAME_TYPE + INT_TYPE_1  +" )";
+	
 
-	public static final String CREATE_ANALYSIS = "create table analysis (id integer PRIMARY KEY AUTOINCREMENT, month date ,"
-			+ "nodrinkdays INT,longestkeepday INT,morningtimes INT,afternoontimes INT,eveningtimes INT);";
+	private static final String SQL_DELETE_HABIT="DROP TABLE IF EXISTS " + HabitEntry.TABLE_NAME;
+	
+	
+	private static final String SQL_CREATE_ANALYSIS =
+		    "CREATE TABLE " + AnalysisEntry.TABLE_NAME + " (" +
+    		AnalysisEntry.COLUMN_NAME_ENTRY_ID + " INTEGER PRIMARY KEY," +
+    		AnalysisEntry.COLUMN_NAME_MONTH + DATE_TYPE_2 + COMMA_SEP +
+		    AnalysisEntry.COLUMN_NAME_NODRINKDAYS + INT_TYPE_2  + COMMA_SEP +
+    	    AnalysisEntry.COLUMN_NAME_LONGESTKEEPDAY + INT_TYPE_2  + COMMA_SEP +
+    	    AnalysisEntry.COLUMN_NAME_MORNINGTIMES + INT_TYPE_2  + COMMA_SEP +
+    	    AnalysisEntry.COLUMN_NAME_AFTERNOONTIMES + INT_TYPE_2  + COMMA_SEP +
+    	    AnalysisEntry.COLUMN_NAME_EVENINGTIMES + INT_TYPE_2  +
+		    " )";
+	
+	private static final String SQL_DELETE_ANALYSIS="DROP TABLE IF EXISTS " + AnalysisEntry.TABLE_NAME;
+
 
 	private Context ctx;
 	
@@ -57,18 +86,20 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	public void onCreate(SQLiteDatabase db)
 	{
 		LogUtil.d("huang", "create database");
-		db.execSQL("DROP TABLE IF EXISTS habit");  
-		db.execSQL("DROP TABLE IF EXISTS analysis");  
-		db.execSQL(CREATE_DRINK);
-		db.execSQL(CREATE_ANALYSIS);
+		db.execSQL(SQL_DELETE_HABIT);  
+		db.execSQL(SQL_CREATE_HABIT);
+		
+		db.execSQL(SQL_DELETE_ANALYSIS);  
+		db.execSQL(SQL_CREATE_ANALYSIS);
 		
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
-		db.execSQL("DROP TABLE IF EXISTS analysis");  
-		db.execSQL(CREATE_ANALYSIS);
+		
+		db.execSQL(SQL_DELETE_ANALYSIS);  
+		db.execSQL(SQL_CREATE_ANALYSIS);
 		
 	}
 	
@@ -115,8 +146,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	public void insertDrinkTime()
 	{
 		SQLiteDatabase db = this.getWritableDatabase();
-		java.util.Date utilDate = new java.util.Date();  
-		db.execSQL("insert into habit values(null,?,?)",new Object[]{DateUtil.DateToString(utilDate),"1"});
+		java.util.Date utilDate = new java.util.Date();
+		ContentValues values = new ContentValues();
+		values.put(HabitEntry.COLUMN_NAME_DATE, DateUtil.DateToString(utilDate));
+		values.put(HabitEntry.COLUMN_NAME_TYPE, "1");
+		db.insert(HabitEntry.TABLE_NAME, null, values);
 		//LogUtil.d("huang", "insert success");
 	}
 	
@@ -139,18 +173,15 @@ public class DatabaseHelper extends SQLiteOpenHelper
 				String firstDay = setting.getString("firstDay", "");
 				res[0] = DateUtil.daysBetween(DateUtil.StringToDate(firstDay), nowDay);
 				recordNumber = "0";
-				//LogUtil.d("huang", "no records firstday="+firstDay+" nowday="+nowDay);
 			}
 			else
 			{
 				Date lastDayDate = DateUtil.StringToDate(habit.getDate());
 				res[0] = DateUtil.daysBetween(lastDayDate, nowDay);
 				recordNumber = "more";
-				//LogUtil.d("huang", "lastDay="+habit.getDate()+"nowDay="+nowDay+"  daysbetween="+res[0]);
 			}
 	
 		res[1] = recordNumber;
-		//LogUtil.d("huang", "recordNumber="+res[1]);
 		
 		return res;
 		
@@ -337,8 +368,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			//则  本月没喝饮料的自觉天数 = 当前日期 - 第一天 - 喝了多少天
 			 int drinkDays = Integer.parseInt(cursor.getString(0));//多少天喝了
 			 conscienceDays =  DateUtil.getDateIndexInMonth(currentDate) - firstDayIndexInThisMonth 
-					 -drinkDays ;
+					 - drinkDays ;
 		}
+		conscienceDays = conscienceDays < 0 ? 0 : conscienceDays;
 		if (!cursor.isClosed())
 			cursor.close();
 		return conscienceDays;
@@ -442,11 +474,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		if(cursor.moveToFirst())
 		{
 			report.setDate(currentMonth);
-			report.setNoDrinkDays(cursor.getInt(0));
-			report.setLongestKeepDays(cursor.getInt(1));
-			report.setMorningtimes(cursor.getInt(2));
-			report.setAfternoontimes(cursor.getInt(3));
-			report.setEveningtimes(cursor.getInt(4));
+			report.setNoDrinkDays(cursor.getInt(cursor.getColumnIndexOrThrow(AnalysisEntry.COLUMN_NAME_NODRINKDAYS)));
+			report.setLongestKeepDays(cursor.getInt(cursor.getColumnIndexOrThrow(AnalysisEntry.COLUMN_NAME_LONGESTKEEPDAY)));
+			report.setMorningtimes(cursor.getInt(cursor.getColumnIndexOrThrow(AnalysisEntry.COLUMN_NAME_MORNINGTIMES)));
+			report.setAfternoontimes(cursor.getInt(cursor.getColumnIndexOrThrow(AnalysisEntry.COLUMN_NAME_AFTERNOONTIMES)));
+			report.setEveningtimes(cursor.getInt(cursor.getColumnIndexOrThrow(AnalysisEntry.COLUMN_NAME_EVENINGTIMES)));
 		}
 		//尽量不要返回空值
 		return report;

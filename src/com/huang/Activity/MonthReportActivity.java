@@ -182,6 +182,8 @@ public class MonthReportActivity extends Activity implements
             {
             	//刷新所有
             	currentMonthTextView.setText(myyear + "/" + monthOfYearStr);
+            	
+
 				longestKeepingDayOfMonthTextView.setText(MyTextUtil.highLightNumber(longestKeepingDayOfMonthTextView, 
 						report.getLongestKeepDays()+"", currentMonthColor));
 
@@ -210,7 +212,7 @@ public class MonthReportActivity extends Activity implements
 		databaseHelper = new DatabaseHelper(this);
 		
 		noDrinkDays = databaseHelper.getNoDrinkDaysNumber(currentTime);
-		monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(currentTime);
+		//monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(currentTime);
 		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(currentTime);
 		partTimeOfDrinktimesOfMonth = databaseHelper.getTimeSectionOfDrinktimesOfMonth(currentTime);
 
@@ -241,7 +243,6 @@ public class MonthReportActivity extends Activity implements
 		tf = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 		mChart.setCenterTextTypeface(Typeface.createFromAsset(getAssets(),"OpenSans-Light.ttf"));
 		mChart.setDrawHoleEnabled(true);// 是否有中间掏空的圆
-		mChart.setCenterText(generateCenterSpannableText());
 		mChart.setCenterTextSize(12f);
 		mChart.setRotationAngle(270);// 从最中间开始动画
 		mChart.setRotationEnabled(true);// 可以手动旋转
@@ -252,10 +253,10 @@ public class MonthReportActivity extends Activity implements
 		initChartData(partTimeOfDrinktimesOfMonth);
 	}
 
-	private SpannableString generateCenterSpannableText()
+	private SpannableString generateCenterSpannableText(int sum)
 	{
 
-		String text = "喝饮料时间分布\n饮用总量 " + monthSumOfDrinkTimes + "瓶";
+		String text = "喝饮料时间分布\n饮用总量 " + sum + "瓶";
 		int x = 7;
 		int y = 7;
 		SpannableString spannableString = new SpannableString(text);
@@ -285,15 +286,18 @@ public class MonthReportActivity extends Activity implements
 		
 		int maxDrinkTimes = 0;
 		int maxIndex = -1;
+		int sum = 0;
 		//添加数据
 		for(int i = 0 , j = 0;i < sectionData.length ; i++)
 		{
 			if(sectionData[i] != 0 )//说明此时间段有记录
 			{
+				sum += sectionData[i];
 				if(sectionData[i] > maxDrinkTimes)
 				{
 					maxDrinkTimes = sectionData[i] ;
 					maxIndex = i;
+			
 				}
 				yVals.add(new Entry(sectionData[i], j++));
 				yValStringArray.add(sectionString[i]+" "+sectionData[i] + "瓶");//拼接成 早上:5 瓶
@@ -303,6 +307,7 @@ public class MonthReportActivity extends Activity implements
 			}
 		
 		}
+		mChart.setCenterText(generateCenterSpannableText(sum));
 		makeTips(maxIndex);//give the suggestion of drink
 		if(isAllZero == false)
 		{
