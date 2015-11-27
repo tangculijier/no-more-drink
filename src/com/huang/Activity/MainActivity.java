@@ -3,10 +3,13 @@ package com.huang.Activity;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -15,6 +18,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -80,7 +84,7 @@ public class MainActivity extends ActionBarActivity
 	 * 喝饮料button
 	 */
 	ImageView drinkBtn;
-	
+	ImageView eye;
 	/**
 	 * 表情跳动动画
 	 */
@@ -118,6 +122,11 @@ public class MainActivity extends ActionBarActivity
 			
 		}
 	};
+	
+	
+	private IntentFilter sendFilter;
+	private SendMessageStatusReceiver sendStatusReceiver;
+	 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{	
@@ -134,6 +143,7 @@ public class MainActivity extends ActionBarActivity
 		balanceImage = (ImageView)findViewById(R.id.balanceImage);
 		balanceText = (TextView)findViewById(R.id.balance);
 		face = (ImageView)findViewById(R.id.face);
+		eye = (ImageView)findViewById(R.id.eye);
 		isSadFace = false;
 		keeptimeText = (TextView)findViewById(R.id.keeptimeText);
 		drinkBtn = (ImageView)findViewById(R.id.drinkBtn);
@@ -171,6 +181,16 @@ public class MainActivity extends ActionBarActivity
 				startActivity(intent);
 			}
 		});
+		eye.setOnClickListener(new OnClickListener()
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				startActivity(new Intent(MainActivity.this,BindWatcherActivity.class));
+				
+			}
+		});
 		
 		databaseHelper = DatabaseHelper.getInstance(this);
 	
@@ -199,6 +219,8 @@ public class MainActivity extends ActionBarActivity
 		
 		setting = getSharedPreferences(AppConst.SHARE_PS_Name, MODE_PRIVATE);
 		
+		registerSendMessageBroadCast();
+
 		
 		if(keepDay !=0 && (keepDay % AppConst.BALANCE_REWARD_VALUE == 0))
 		{
@@ -228,6 +250,37 @@ public class MainActivity extends ActionBarActivity
 //		//	notficationBuilder.setWhen(1000l);//设置时间发生时间
 //			keepDayNotification.notify(NotificationID, notficationBuilder.build());
 //		}
+		startFaceAnimation();
+		
+		
+		drinkBtn.setOnClickListener(new OnClickListener()
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				final AlertDialog.Builder  dialog = new AlertDialog.Builder(MainActivity.this);
+				dialog.setTitle("喝饮料了吧 ?");
+				dialog.setIcon(R.drawable.dialog_icon);
+				dialog.setPositiveButton("敢作敢当 !", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						drink();
+						calculateBalance(false);
+					}
+				});
+				dialog.create();
+				dialog.show();
+				
+			}
+		});
+	
+	
+	}
+	public void startFaceAnimation()
+	{
 		new Thread(new Runnable()
 		{
 			
@@ -289,33 +342,6 @@ public class MainActivity extends ActionBarActivity
 				
 			}
 		}).start();
-		
-		
-		drinkBtn.setOnClickListener(new OnClickListener()
-		{
-			
-			@Override
-			public void onClick(View v)
-			{
-				final AlertDialog.Builder  dialog = new AlertDialog.Builder(MainActivity.this);
-				dialog.setTitle("喝饮料了吧 ?");
-				dialog.setIcon(R.drawable.dialog_icon);
-				dialog.setPositiveButton("敢作敢当 !", new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialog, int which)
-					{
-						drink();
-						calculateBalance(false);
-					}
-				});
-				dialog.create();
-				dialog.show();
-				
-			}
-		});
-	
-	
 	}
 	
 	Handler myHandler = new Handler()
@@ -345,6 +371,7 @@ public class MainActivity extends ActionBarActivity
 	@Override
 	protected void onStart()
 	{
+
 		List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
 		calendar.setDrinkRecords(drinkDateRecords);
 		calendar.invalidate();
@@ -353,53 +380,35 @@ public class MainActivity extends ActionBarActivity
 		bindService(bindIntent, serviceConn, BIND_AUTO_CREATE);  
 		super.onStart();
 	}
-	
-	private GestureDetector.OnGestureListener onGestureListener = new GestureDetector.SimpleOnGestureListener()
+	@Override
+	protected void onResume()
 	{
-		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY)
-		{
-			float x = e2.getX() - e1.getX();
-			//float y = e2.getY() - e1.getY();
-			
-			if (x > 10)//right gesture
-			{
-				calendar.getLastMonth();
-				
-				LogUtil.d("huang", "右滑动"+x);
-			} else if (x < -10)//left gesture
-			{
-			
-				calendar.getNextMonth();
-				LogUtil.d("huang", "左"+x);
-			}
-			List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
-			calendar.setDrinkRecords(drinkDateRecords);
-			calendar.invalidate();
-			return true;
-		}
-	};
+		changeWatcherImage();
+		super.onResume();
+	}
+	@Override
+	protected void onDestroy()
+	{
+		unbindService(serviceConn);  
+		unregisterReceiver(sendStatusReceiver);
+		LogUtil.d("huang", "onDestroy unbindService");
+		super.onDestroy();
+	}
 	
-	public boolean onTouchEvent(MotionEvent event) 
-	{  
-        return gestureDetector.onTouchEvent(event);  
-    }  
-	
-
 	/**
 	 * 喝饮料
 	 */
 	private void drink()
 	{
 		LogUtil.d("huang", "drink()");
-		
 		faceToSad(true);
-		
 		databaseHelper.insertDrinkTime();
 		List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
 		calendar.setDrinkRecords(drinkDateRecords);
 		calendar.invalidate();
+		
+		
+		sentMessageToMyWatcher();
 		
 		updateViewBinder.getWidgetService().updateViews();//更新桌面
 	}
@@ -420,7 +429,6 @@ public class MainActivity extends ActionBarActivity
 				@Override
 				public void run()
 				{
-					LogUtil.d("huang","end");
 					face.setImageResource(R.drawable.face_sad);
 					float fromX =getResources().getDisplayMetrics().widthPixels - 2 * face.getWidth() ;
 					float toX = 0f;
@@ -565,14 +573,101 @@ public class MainActivity extends ActionBarActivity
 			
 		}
 	}
-	@Override
-	protected void onDestroy()
+	
+	/**
+	 * 修改监督人的图标
+	 */
+	private void changeWatcherImage()
 	{
-		unbindService(serviceConn);  
-		LogUtil.d("huang", "onDestroy unbindService");
-		super.onDestroy();
+		boolean isOpenWatcher = setting.getBoolean(AppConst.IS_OPEN_WATCHER, false);
+		if(isOpenWatcher == true)
+		{
+			if(!TextUtils.isEmpty(setting.getString(AppConst.WATCHER_NUMBER, "")))
+			{
+				eye.setImageResource(R.drawable.bind_ok);
+			}
+			
+		}
+		else
+		{
+			eye.setImageResource(R.drawable.eye);
+		}
+	}
+
+	/**
+	 * 给监督人发短信
+	 */
+	private void sentMessageToMyWatcher()
+	{
+		boolean isOpenWatcher = setting.getBoolean(AppConst.IS_OPEN_WATCHER, false);
+		if(isOpenWatcher == true)
+		{
+			String telephoneNum = setting.getString(AppConst.WATCHER_NUMBER, "");
+			if(!TextUtils.isEmpty(telephoneNum))
+			{
+				String message = setting.getString(AppConst.WATCHER_MESSAGE, "");
+				Intent sentIntent = new Intent("SENT_SMS_ACTION");
+				PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, 0, sentIntent, 0);
+				SmsManager smsManager = SmsManager.getDefault();
+				smsManager.sendTextMessage(telephoneNum, null,message, pi,  null); 
+			}
+
+		}
+	
 	}
 	
+	private void registerSendMessageBroadCast()
+	{
+		sendFilter = new IntentFilter();
+		sendFilter.addAction("SENT_SMS_ACTION");
+		sendStatusReceiver = new SendMessageStatusReceiver();
+		registerReceiver(sendStatusReceiver, sendFilter);	
+	}
 	
-
+	class SendMessageStatusReceiver extends BroadcastReceiver
+	{
+		@Override
+		public void onReceive(Context context, Intent intent) 
+		{
+			if (getResultCode() == RESULT_OK) 
+			{
+				//  短信发送成功
+				Toast.makeText(context, "已通知监督人",Toast.LENGTH_LONG).show();
+			} 
+			else
+			{
+				//  短信发送失败
+				Toast.makeText(context, "通知监督人失败",Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+	
+	private GestureDetector.OnGestureListener onGestureListener = new GestureDetector.SimpleOnGestureListener()
+	{
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY)
+		{
+			float x = e2.getX() - e1.getX();
+			if (x > 10)//right gesture
+			{
+				calendar.getLastMonth();
+				//LogUtil.d("huang", "右滑动"+x);
+			} else if (x < -10)//left gesture
+			{
+			
+				calendar.getNextMonth();
+				//LogUtil.d("huang", "左"+x);
+			}
+			List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
+			calendar.setDrinkRecords(drinkDateRecords);
+			calendar.invalidate();
+			return true;
+		}
+	};
+	
+	public boolean onTouchEvent(MotionEvent event) 
+	{  
+        return gestureDetector.onTouchEvent(event);  
+    }  
 }

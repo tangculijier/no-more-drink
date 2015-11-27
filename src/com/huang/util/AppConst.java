@@ -27,4 +27,12 @@ public class AppConst
 	public static final String  BALANCE = "balance";
 	public static final String  ROUND_DAY = "roundDay";
 	public static final String  IS_FIRST_ANANLYSIS = "isFirstAnalysis";
+	public static final String 	IS_OPEN_WATCHER = "isOpenWatcher";
+	public static final String  WATCHER_NUMBER = "watcherNumber";
+	public static final String  WATCHER_MESSAGE = "watcherMessage";
+
+	/**
+	 * china cellphone number length
+	 */
+	public static final int CELLPHONE_LENGTH = 11;
 }

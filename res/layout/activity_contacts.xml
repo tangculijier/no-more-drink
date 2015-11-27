@@ -1,0 +1,18 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.huang.Activity.ContactsActivity" >
+
+       <com.huang.views.indexListview.IndexListView
+        android:id="@+id/contactListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="#999999"
+        android:dividerHeight="1px" 
+        android:paddingLeft="5dp"
+        >
+    </com.huang.views.indexListview.IndexListView>
+
+
+</RelativeLayout>
