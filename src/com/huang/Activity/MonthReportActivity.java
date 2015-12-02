@@ -1,6 +1,7 @@
 package com.huang.Activity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -19,6 +20,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -219,9 +221,16 @@ public class MonthReportActivity extends Activity implements
     			curmonth = monthOfYear - 1;
     		
             }
+            else if(DateUtil.isSameMonth(currentTime, pickDate) == true)//如果重新选择回当前月份
+            {
+            	curyear = myyear;
+    			curmonth = monthOfYear - 1;
+            	initData();
+            }
             else
             {
             	Toast.makeText(MonthReportActivity.this, "所选月份没有记录", Toast.LENGTH_LONG).show();
+
             }
             
         }
@@ -234,7 +243,6 @@ public class MonthReportActivity extends Activity implements
 		databaseHelper = DatabaseHelper.getInstance(this);
 		
 		noDrinkDays = databaseHelper.getNoDrinkDaysNumber(currentTime);
-		//monthSumOfDrinkTimes = databaseHelper.getMonthSumOfDrinkTimes(currentTime);
 		longestKeepingDayOfMonth = databaseHelper.getLongestKeepingDayOfMonth(currentTime);
 		partTimeOfDrinktimesOfMonth = databaseHelper.getTimeSectionOfDrinktimesOfMonth(currentTime);
 
@@ -277,18 +285,23 @@ public class MonthReportActivity extends Activity implements
 
 	private SpannableString generateCenterSpannableText(int sum)
 	{
-
-		String text = "喝饮料时间分布\n饮用总量 " + sum + "瓶";
-		int x = 7;
-		int y = 7;
-		SpannableString spannableString = new SpannableString(text);
-		spannableString.setSpan(new RelativeSizeSpan(1.3f), 0, x, 0);
-		spannableString.setSpan(new StyleSpan(Typeface.NORMAL), x,spannableString.length() - y, 0);
-		spannableString.setSpan(new ForegroundColorSpan(Color.GRAY), x,spannableString.length() - y, 0);
-		spannableString.setSpan(new RelativeSizeSpan(.8f), x,spannableString.length() - y, 0);
-		spannableString.setSpan(new StyleSpan(Typeface.ITALIC),spannableString.length() - x, spannableString.length(), 0);
+		String title = "喝饮料时间分布";
+		String subTitle = "\n饮用总量 " ;
+		String numberStr =  sum + "瓶";
+		int titleLength = title.length();
+		int subTitleLength = subTitle.length();
+		int numberStrLength = numberStr.length();
+		
+		SpannableString spannableString = new SpannableString(title + subTitle + numberStr);
+		spannableString.setSpan(new RelativeSizeSpan(1.3f), 0, titleLength, 0);
+		
+		spannableString.setSpan(new StyleSpan(Typeface.NORMAL), titleLength,titleLength + subTitleLength, 0);
+		spannableString.setSpan(new ForegroundColorSpan(Color.GRAY), titleLength,titleLength + subTitleLength, 0);
+		spannableString.setSpan(new RelativeSizeSpan(1.1f), titleLength,titleLength + subTitleLength, 0);
+		
+		spannableString.setSpan(new StyleSpan(Typeface.ITALIC),spannableString.length() - numberStrLength, spannableString.length(), 0);
 		spannableString.setSpan(new ForegroundColorSpan(ColorTemplate.getHoloBlue()),
-				spannableString.length() - x, spannableString.length(), 0);
+				spannableString.length() - numberStrLength, spannableString.length(), 0);
 		return spannableString;
 	}
 	
@@ -353,14 +366,20 @@ public class MonthReportActivity extends Activity implements
 			// undo all highlights
 			mChart.highlightValues(null);
 			
+			
 			// 类别说明
 			Legend legend = mChart.getLegend();
 			legend.setPosition(LegendPosition.BELOW_CHART_CENTER);
+			/*
+			 * 	legend.setCustom(colors, legendStringArray);//自定义的底部分类说明 
+			 *	小米4上有bug :java.lang.ArrayIndexOutOfBoundsException: length=1; index=1
+			 *	暂时不知道原因
+			 */
 			legend.setXEntrySpace(7f);
 			legend.setYEntrySpace(0f);
 			legend.setTextSize(12f);
 			legend.setYOffset(5f);
-			legend.setCustom(colors, legendStringArray);//自定义的底部分类说明
+
 			
 			mChart.invalidate();
 			showMyChart();
