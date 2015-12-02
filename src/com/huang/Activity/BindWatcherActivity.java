@@ -59,16 +59,7 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 		if(isOpenWatcher == true)
 		{
 			showBindInfo();
-			String telephoneNum = setting.getString(AppConst.WATCHER_NUMBER, "");
-			if(!TextUtils.isEmpty(telephoneNum))
-			{
-				bindNumberText.setText(telephoneNum);
-			}
-			String message = setting.getString(AppConst.WATCHER_MESSAGE, "");
-			if(!TextUtils.isEmpty(message))
-			{
-				bindMessageText.setText(message);
-			}
+			setBindInfo();
 		
 		}
 	
@@ -79,18 +70,16 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 			{
-				LogUtil.d("huang", "isChecked="+isChecked);
 				if(isChecked == true)
 				{
 					showBindInfo();
 					setting.edit().putBoolean(AppConst.IS_OPEN_WATCHER, isChecked).commit();
-					
+					setBindInfo();
 				}
 				else
 				{
 					hideBindInfo();
 					setting.edit().putBoolean(AppConst.IS_OPEN_WATCHER, isChecked).commit();
-
 				}
 				
 			}
@@ -144,6 +133,20 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 				dialog.show();
 			}
 		});
+	}
+
+	public void setBindInfo()
+	{
+		String telephoneNum = setting.getString(AppConst.WATCHER_NUMBER, "");
+		if(!TextUtils.isEmpty(telephoneNum))
+		{
+			bindNumberText.setText(telephoneNum);
+		}
+		String message = setting.getString(AppConst.WATCHER_MESSAGE, "");
+		if(!TextUtils.isEmpty(message))
+		{
+			bindMessageText.setText(message);
+		}
 	}
 	
 	private void showBindInfo()

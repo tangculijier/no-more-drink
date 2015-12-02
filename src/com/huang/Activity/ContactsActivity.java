@@ -22,6 +22,7 @@ import com.huang.nodrinkmore.R;
 import com.huang.nodrinkmore.R.id;
 import com.huang.nodrinkmore.R.layout;
 import com.huang.util.AppConst;
+import com.huang.util.LogUtil;
 import com.huang.views.indexListview.IndexListView;
 import com.huang.views.indexListview.IndexListViewAdapter;
 
@@ -48,9 +49,9 @@ public class ContactsActivity extends ActionBarBaseActivity
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id)
 			{
-				String name = ((TextView)view).getText().toString(); 
+				String nameAndNumber = ((TextView)view).getText().toString(); 
 				Intent intent=new Intent(ContactsActivity.this,BindWatcherActivity.class);
-				intent.putExtra("eyeNumber",phonebook.get(name));
+				intent.putExtra("eyeNumber",getPhoneNum(nameAndNumber.split("\n")[1]));
 				setResult(RESULT_OK,intent);
 				finish();
 
@@ -71,8 +72,7 @@ public class ContactsActivity extends ActionBarBaseActivity
 				String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 				//if(number.length() == AppConst.CELLPHONE_LENGTH)//手机号
 				{
-					phonebook.put(displayName.trim(), number.trim());
-					contactsList.add(displayName.trim());
+					contactsList.add(displayName.trim()+"\n"+number);
 				}
 			
 			}
@@ -90,6 +90,28 @@ public class ContactsActivity extends ActionBarBaseActivity
 			}
 		}
 		
+	}
+	
+	/**
+	 * 
+	 * @param phoneNumberStr 未经处理的电话 eg:150-343-43312
+	 * @return 纯数字 eg:15034343312
+	 */
+	public String getPhoneNum(String phoneNumberStr)
+	{
+		StringBuilder res = new StringBuilder(256);
+		phoneNumberStr = phoneNumberStr.trim();
+		if (phoneNumberStr != null && phoneNumberStr.length() != 0)
+		{
+			for (int i = 0; i < phoneNumberStr.length(); i++)
+			{
+				if (phoneNumberStr.charAt(i) >= '0' && phoneNumberStr.charAt(i) <= '9')
+				{
+					res.append(phoneNumberStr.charAt(i));
+				}
+			}
+		}
+		return res.toString();
 	}
 
 }

@@ -6,6 +6,10 @@ package com.huang.util;
 public class AppConst
 {
 
+	private AppConst()
+	{
+		
+	}
 	/**
 	 * 自觉值初始化的值
 	 */
