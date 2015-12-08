@@ -1,38 +1,29 @@
 package com.huang.Activity;
 
-import com.huang.nodrinkmore.R;
-import com.huang.nodrinkmore.R.id;
-import com.huang.nodrinkmore.R.layout;
-import com.huang.util.AppConst;
-import com.huang.util.LogUtil;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.view.MenuItem;
-import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
+
+import com.gc.materialdesign.views.ButtonFlat;
+import com.gc.materialdesign.views.Switch;
+import com.gc.materialdesign.views.Switch.OnCheckListener;
+import com.gc.materialdesign.widgets.Dialog;
+import com.huang.nodrinkmore.R;
+import com.huang.util.AppConst;
+import com.huang.util.LogUtil;
 
 public class BindWatcherActivity extends ActionBarBaseActivity
 {
 	EditText bindNumberText;
 	EditText bindMessageText;
-	ImageButton addWatcherButton;
-	Button confirmBindButton;
+	ImageView addWatcherImgButton;
+	ButtonFlat confirmBindButton;
 	Switch openSwitch;
 	LinearLayout bindInfoLayout;
 	
@@ -46,8 +37,9 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 		setContentView(R.layout.activity_bind_watcher);
 	
 		bindNumberText = (EditText)findViewById(R.id.bind_number);
-		addWatcherButton = (ImageButton)findViewById(R.id.add_watcher);
-		confirmBindButton = (Button)findViewById(R.id.confirm_bind_button);
+		addWatcherImgButton = (ImageView)findViewById(R.id.add_watcher);
+		confirmBindButton = (ButtonFlat)findViewById(R.id.confirm_bind_button);
+		confirmBindButton.getTextView().setTextSize(22);
 		bindMessageText = (EditText)findViewById(R.id.bind_message_text);
 		openSwitch = (Switch)findViewById(R.id.open_switch);
 		bindInfoLayout = (LinearLayout)findViewById(R.id.bind_info_layout);
@@ -63,28 +55,37 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 		
 		}
 	
-		
-		openSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		openSwitch.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				LogUtil.d("huang", "onclcik");
+				
+			}
+		});
+		openSwitch.setOncheckListener(new OnCheckListener()
 		{
 			
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+			public void onCheck(Switch view, boolean isChecked)
 			{
 				if(isChecked == true)
 				{
 					showBindInfo();
-					setting.edit().putBoolean(AppConst.IS_OPEN_WATCHER, isChecked).commit();
 					setBindInfo();
+				
 				}
 				else
 				{
 					hideBindInfo();
-					setting.edit().putBoolean(AppConst.IS_OPEN_WATCHER, isChecked).commit();
 				}
+				setting.edit().putBoolean(AppConst.IS_OPEN_WATCHER, isChecked).commit();
+
 				
 			}
 		});
-		addWatcherButton.setOnClickListener(new OnClickListener()
+		addWatcherImgButton.setOnClickListener(new OnClickListener()
 		{
 			
 			@Override
@@ -107,30 +108,36 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 				setting.edit().putString(AppConst.WATCHER_NUMBER, bindNumber).commit();
 				setting.edit().putString(AppConst.WATCHER_MESSAGE, bindMessage).commit();
 				
-				AlertDialog.Builder dialog = new AlertDialog.Builder(BindWatcherActivity.this);
+			
+			
+		
+				
+				
+				final Dialog dialog = new Dialog(BindWatcherActivity.this,"", "");
+				dialog.show();
 				if(!TextUtils.isEmpty(setting.getString(AppConst.WATCHER_NUMBER, "")))
 				{
 					//还要检查电话号码
 					dialog.setTitle("绑定成功");
-					dialog.setPositiveButton("确定",new DialogInterface.OnClickListener()
+					dialog.setOnAcceptButtonClickListener(new OnClickListener()
 					{
 						
 						@Override
-						public void onClick(DialogInterface dialog, int which)
+						public void onClick(View v)
 						{
-							
+							dialog.dismiss();
 							finish();
+							
 						}
 					});
 				}
 				else
 				{
 					dialog.setTitle("绑定失败,请重试");
-					dialog.setPositiveButton("确定",null);
 				}
-				
-				dialog.create();
-				dialog.show();
+			
+				ButtonFlat acceptButton = dialog.getButtonAccept();
+				acceptButton.setText("确定");
 			}
 		});
 	}

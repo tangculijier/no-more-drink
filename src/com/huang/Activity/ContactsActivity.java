@@ -3,11 +3,9 @@ package com.huang.Activity;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -18,10 +16,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.huang.model.Phone;
 import com.huang.nodrinkmore.R;
 import com.huang.nodrinkmore.R.id;
 import com.huang.nodrinkmore.R.layout;
-import com.huang.util.AppConst;
+import com.huang.util.AscNameComparator;
 import com.huang.util.LogUtil;
 import com.huang.views.indexListview.IndexListView;
 import com.huang.views.indexListview.IndexListViewAdapter;
@@ -30,9 +29,9 @@ public class ContactsActivity extends ActionBarBaseActivity
 {
 
 	IndexListView contactsView;
-	ArrayAdapter<String> adapter;
-	List<String> contactsList = new ArrayList<String>();
-	HashMap<String,String> phonebook = new HashMap<String, String>();
+	ArrayAdapter<Phone> adapter;
+	List<Phone> contactsList = new ArrayList<Phone>();
+	//List<Phone> contactsList = new ArrayList<Phone>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -40,7 +39,7 @@ public class ContactsActivity extends ActionBarBaseActivity
 		setContentView(R.layout.activity_contacts);
 		contactsView = (IndexListView) findViewById(R.id.contactListView);
 		readContacts();
-		adapter = new IndexListViewAdapter(this, android.R.layout.simple_list_item_1, contactsList);
+		adapter = new IndexListViewAdapter(this, R.layout.listview_phone, contactsList);
 		contactsView.setAdapter(adapter);
 		contactsView.setOnItemClickListener(new OnItemClickListener()
 		{
@@ -49,12 +48,10 @@ public class ContactsActivity extends ActionBarBaseActivity
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id)
 			{
-				String nameAndNumber = ((TextView)view).getText().toString(); 
 				Intent intent=new Intent(ContactsActivity.this,BindWatcherActivity.class);
-				intent.putExtra("eyeNumber",getPhoneNum(nameAndNumber.split("\n")[1]));
+				intent.putExtra("eyeNumber",contactsList.get(position).getUserPhone());
 				setResult(RESULT_OK,intent);
 				finish();
-
 				
 			}
 		});
@@ -72,11 +69,11 @@ public class ContactsActivity extends ActionBarBaseActivity
 				String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 				//if(number.length() == AppConst.CELLPHONE_LENGTH)//手机号
 				{
-					contactsList.add(displayName.trim()+"\n"+number);
+					contactsList.add(new Phone(displayName.trim(),number));
 				}
 			
 			}
-			Collections.sort(contactsList, Collator.getInstance(Locale.CHINA));//按中文排序 未处理多音字
+			Collections.sort(contactsList, new AscNameComparator());//按中文排序 未处理多音字
 		} catch (Exception e)
 		{
 			e.printStackTrace();

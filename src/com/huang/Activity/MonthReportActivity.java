@@ -1,26 +1,20 @@
 package com.huang.Activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.AlteredCharSequence;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -29,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gc.materialdesign.views.ButtonFlat;
+import com.gc.materialdesign.widgets.Dialog;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -78,11 +74,6 @@ public class MonthReportActivity extends Activity implements
 	 * 显示自觉天数即不喝饮料的天数的textview
 	 */
 	private TextView noDrinkDaysTextView;  
-
-	
-	
-
-	
 	/**
 	 * 最长保持纪录(天)
 	 */
@@ -148,12 +139,13 @@ public class MonthReportActivity extends Activity implements
 		boolean isFirstAnalysis= setting.getBoolean(AppConst.IS_FIRST_ANANLYSIS, true);
 		if(isFirstAnalysis == true)
 		{
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(R.string.tip);
-			builder.setMessage(R.string.report_dialog_text);
-			builder.setIcon(R.drawable.tip);
-			builder.setPositiveButton("我知道了", null);
-			builder.create().show();
+			
+			final Dialog dialog = new Dialog(MonthReportActivity.this,
+					getResources().getString(R.string.tip),
+					getResources().getString(R.string.report_dialog_text));
+			dialog.show();
+			ButtonFlat acceptButton = dialog.getButtonAccept();
+			acceptButton.setText("我知道了");
 			setting.edit().putBoolean(AppConst.IS_FIRST_ANANLYSIS, false).commit();
 			
 		}

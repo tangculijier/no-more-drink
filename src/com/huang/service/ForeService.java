@@ -47,7 +47,7 @@ public class ForeService extends Service
 			Notification notification = new Notification(R.drawable.face_simle, "1", System.currentTimeMillis());
 			Intent notIntent = new Intent(this,MainActivity.class);
 			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notIntent, 0);
-			notification.setLatestEventInfo(this, "不喝饮料已保持", keepday, pendingIntent);
+			//notification.setLatestEventInfo(this, "不喝饮料已保持", keepday, pendingIntent);
 			startForeground(1, notification);
 		}
 		

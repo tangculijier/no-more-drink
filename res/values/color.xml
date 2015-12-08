@@ -7,9 +7,13 @@
     <color name="green_light">#81C784</color>
     <color name="green_normal">#51A387</color>
     <color name="green_light_more">#8BC34A</color>
+    
     <color name="white">#FFFFFF</color>
-    <color name="blue">#379BFF</color>
+    
     <color name="grey">#666666</color>
+    <color name="grey_light">#EBEBEB</color>
+    
+    <color name="blue">#379BFF</color>
     <color name="blue_dark">#2E2E3B</color>
-          
+    <color name="blue_MD">#1E88E5</color>
 </resources>

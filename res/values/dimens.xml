@@ -8,4 +8,6 @@
     <dimen name="font_lager">34sp</dimen>
         <dimen name="font_bigger">24sp</dimen>
          <dimen name="font_normal">18sp</dimen>
+         
+         
 </resources>

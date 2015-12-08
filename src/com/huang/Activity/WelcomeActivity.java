@@ -22,7 +22,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -34,21 +33,27 @@ import com.huang.util.DatabaseHelper;
 import com.huang.util.DateUtil;
 import com.huang.util.LogUtil;
 import com.huang.views.CircleIndicator.CircleIndicator;
+import com.nineoldandroids.animation.ObjectAnimator;
 
+/**
+ * 欢迎引导界面 包括了2个viewpager页面 包含了一些动画
+ * @author lizheHuang
+ * @Date   time :2015年11月
+ * @version 1.0
+ */
 public class WelcomeActivity extends Activity 
 {
-	private final String TAG = this.getClass().getSimpleName();
 	/**
 	 * 开始go按钮
 	 */
-	private Button begin;
+	private Button beginButton;
 	
 	/**
-	 * 自觉值
+	 * 健康值
 	 */
 	private int balance;
 	
-	private List<View> viewList;
+	private List<View> viewPagerList;
 	
 	private ViewPager viewPager;
 	
@@ -58,6 +63,7 @@ public class WelcomeActivity extends Activity
 	private CircleIndicator circleIndicator;
 	
 	
+	//viewpager2 images
 	private ImageView man;
 	private ImageView drink;
 	private ImageView blance_example;
@@ -73,7 +79,6 @@ public class WelcomeActivity extends Activity
 	 */
 	private boolean isAnimationShowOver = true;
 	
-	private RelativeLayout.LayoutParams params;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -90,14 +95,15 @@ public class WelcomeActivity extends Activity
 
 	public void initViewPager()
 	{
-		viewList = new ArrayList<View>();
+		viewPagerList = new ArrayList<View>();
 		LayoutInflater inflater = getLayoutInflater().from(this);
 		View viewPager1 = inflater.inflate(R.layout.viewpage_1, null);
 		View viewPager2 = inflater.inflate(R.layout.viewpage_2, null);
-		viewList.add(viewPager1);
-		viewList.add(viewPager2);
+		viewPagerList.add(viewPager1);
+		viewPagerList.add(viewPager2);
 		viewPager.setAdapter(new MyViewPagerAdapter());
-	    begin = (Button)viewPager2.findViewById(R.id.begin);
+	    beginButton = (Button)viewPager2.findViewById(R.id.begin);
+
 	    man = (ImageView)viewPager2.findViewById(R.id.man);
 	    drink = (ImageView)viewPager2.findViewById(R.id.drink);
 	    blance_example = (ImageView)viewPager2.findViewById(R.id.blance_example2);
@@ -107,7 +113,6 @@ public class WelcomeActivity extends Activity
 			@Override
 			public void onPageSelected(int position)
 			{
-				//LogUtil.d("huang", "wel onPageSelected pos="+position);
 				circleIndicator.trgger(position, 0);
 				if(position == 1)
 				{
@@ -133,10 +138,16 @@ public class WelcomeActivity extends Activity
 						timing++;
 						targetViewStartAnimation(blance_example,AnimationUtil.getSubBalanceAnimation(0f),animationDelayTime + (timing++ * duration));
 						timing++;
-						targetViewStartAnimation(begin,jumpAnimation,animationDelayTime + (timing++ * duration));
+						targetViewStartAnimation(beginButton,jumpAnimation,animationDelayTime + (timing++ * duration));
 					
-
 					}
+				}
+				else
+				{
+					//beginButton回归位置
+					ObjectAnimator buttonDownAnimaor = ObjectAnimator.ofFloat(beginButton, "translationY", 40f, 0f);
+					buttonDownAnimaor.setDuration(0);
+					buttonDownAnimaor.start();
 				}
 				
 			}
@@ -169,36 +180,19 @@ public class WelcomeActivity extends Activity
 			@Override
 			public void run()
 			{
-				view.startAnimation(animation);
-	
-				animation.setAnimationListener(new AnimationListener()
+				if(view.getId() != R.id.begin)
 				{
-					@Override
-					public void onAnimationStart(Animation animation)
-					{
-						if(view.getId() == R.id.begin)
-						{
-							  params = (RelativeLayout.LayoutParams) begin.getLayoutParams();
-						}
-					}
-					
-					@Override
-					public void onAnimationRepeat(Animation animation)
-					{
-					}
-					@Override
-					public void onAnimationEnd(Animation animation)
-					{
-						if(view.getId() == R.id.begin)
-						{
-							params.bottomMargin = 40 + params.bottomMargin;//动画结束后button位置会变化
-			                begin.setLayoutParams(params);
-							begin.clearAnimation();//防止闪烁
-							isAnimationShowOver = true;
-							LogUtil.d("huang", "整个动画执行完毕");
-						}
-					}
-				});
+					view.startAnimation(animation);
+				}
+				else
+				{
+					//此处用ObjectAnimator 最后的点击不会错位
+					ObjectAnimator buttonUpAnimaor = ObjectAnimator.ofFloat(beginButton, "translationY", 0f, -40f);
+					buttonUpAnimaor.setDuration(2000);
+					buttonUpAnimaor.start();
+					isAnimationShowOver = true;//整个动画执行完毕
+				}
+				
 			
 			}
 		},delayTime);
@@ -216,15 +210,14 @@ public class WelcomeActivity extends Activity
 		final SharedPreferences  setting = getSharedPreferences(AppConst.SHARE_PS_Name, MODE_PRIVATE);
 		boolean isFirst= setting.getBoolean(AppConst.IS_FIRST, true);
 
-		//int versionCode = getVersionCode();
+		//if first into app then make database
 		if(isFirst == true)
 		{
-			begin.setOnClickListener(new OnClickListener()
+			beginButton.setOnClickListener(new OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
-					LogUtil.d(TAG, "第一次"+TAG);
 					//在这里初始化数据库
 					DatabaseHelper databaseHelper = DatabaseHelper.getInstance(WelcomeActivity.this);
 					SQLiteDatabase db = databaseHelper.getWritableDatabase();
@@ -246,9 +239,8 @@ public class WelcomeActivity extends Activity
 				}
 			});
 		}
-		else
+		else//else get the balance and go to MainActivity
 		{
-			LogUtil.d(TAG, "not 第一次"+TAG);
 			balance = setting.getInt("balance", AppConst.BALANCE_INIT_VALUE);
 			jumptoMainActivity(balance);
 		
@@ -272,7 +264,7 @@ public class WelcomeActivity extends Activity
 		@Override
 		public Object instantiateItem(ViewGroup container, int position)
 		{   
-			View currentView = viewList.get(position);
+			View currentView = viewPagerList.get(position);
 			container.addView(currentView);
 			return currentView;
 		}
@@ -280,7 +272,7 @@ public class WelcomeActivity extends Activity
 		@Override
 		public int getCount()
 		{
-			return viewList.size();
+			return viewPagerList.size();
 		}
 
 		@Override
@@ -292,7 +284,7 @@ public class WelcomeActivity extends Activity
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object)
 		{
-			container.removeView(viewList.get(position));
+			container.removeView(viewPagerList.get(position));
 		}
 		
 
@@ -300,6 +292,7 @@ public class WelcomeActivity extends Activity
 
 	/**
 	 * 得到当前的版本信息
+	 * 暂时没有用
 	 * @return versionCode
 	 */
 	public int getVersionCode()

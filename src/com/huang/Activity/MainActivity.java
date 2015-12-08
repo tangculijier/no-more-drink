@@ -20,6 +20,7 @@ import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gc.materialdesign.widgets.SnackBar;
 import com.huang.model.Habit;
 import com.huang.nodrinkmore.R;
 import com.huang.service.WidgetService;
@@ -59,11 +61,11 @@ public class MainActivity extends ActionBarActivity
 	 */
 	ImageView analyticsImage;
 	/**
-	 * 自觉值图片--向日葵
+	 * 健康值图片--向日葵
 	 */
 	ImageView balanceImage;
 	/**
-	 * 自觉值
+	 * 健康值
 	 */
 	TextView balanceText;
 	
@@ -228,28 +230,13 @@ public class MainActivity extends ActionBarActivity
 			int roundDay = setting.getInt(AppConst.ROUND_DAY, 0);
 			if(roundToday != roundDay)	//这次奖励还没有加过
 			{
-				Toast.makeText(this, "已保持3天,自觉值+1,加油!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "已保持3天,健康值+1,加油!", Toast.LENGTH_SHORT).show();
 				calculateBalance(true);
 				setting.edit().putInt(AppConst.ROUND_DAY, roundToday).commit();
 			}
 			
 		}
 		databaseHelper.checkAndinsertAnalysis();
-//		if(!TextUtils.equals(text, "0 天"))
-//		{
-//	
-//		    keepDayNotification = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//			Notification.Builder notficationBuilder = new Notification.Builder(this);
-//			notficationBuilder.setAutoCancel(false);//设置可以清除
-//			notficationBuilder.setSmallIcon(R.drawable.face_simle);
-//			notficationBuilder.setLargeIcon(BitmapFactory.decodeResource(MainActivity.this.getResources(), R.drawable.face_simle));
-//			notficationBuilder.setContentTitle("不喝饮料已保持");
-//			notficationBuilder.setContentText(text);
-//			notficationBuilder.setPriority(Notification.FLAG_FOREGROUND_SERVICE);
-//			notficationBuilder.setOngoing(true);
-//		//	notficationBuilder.setWhen(1000l);//设置时间发生时间
-//			keepDayNotification.notify(NotificationID, notficationBuilder.build());
-//		}
 		startFaceAnimation();
 		
 		
@@ -259,20 +246,19 @@ public class MainActivity extends ActionBarActivity
 			@Override
 			public void onClick(View v)
 			{
-				final AlertDialog.Builder  dialog = new AlertDialog.Builder(MainActivity.this);
-				dialog.setTitle("喝饮料了吧 ?");
-				dialog.setIcon(R.drawable.dialog_icon);
-				dialog.setPositiveButton("敢作敢当 !", new DialogInterface.OnClickListener()
+				
+				SnackBar snackbar = new SnackBar(MainActivity.this,"喝饮料了吧 ?","敢作敢当 !", new OnClickListener()
 				{
+					
 					@Override
-					public void onClick(DialogInterface dialog, int which)
+					public void onClick(View v)
 					{
 						drink();
 						calculateBalance(false);
+						
 					}
 				});
-				dialog.create();
-				dialog.show();
+				snackbar.show();
 				
 			}
 		});
@@ -518,8 +504,8 @@ public class MainActivity extends ActionBarActivity
 	}
 	
 	/**
-	 * 计算自觉值
-	 * @param isAdd 是否是增加自觉值
+	 * 计算健康值
+	 * @param isAdd 是否是增加健康值
 	 */
 	private void calculateBalance(boolean isAdd)
 	{
@@ -554,7 +540,7 @@ public class MainActivity extends ActionBarActivity
 			
 	}
 	/**
-	 * 设置自觉值的颜色
+	 * 设置健康值的颜色
 	 */
 	private void balanceTextSetColor(int balance)
 	{
@@ -565,7 +551,7 @@ public class MainActivity extends ActionBarActivity
 		else if(balance == 0)
 		{
 			balanceText.setTextColor(Color.BLACK);
-			Toast.makeText(MainActivity.this, "自觉值已经归0", Toast.LENGTH_SHORT).show();
+			Toast.makeText(MainActivity.this, "健康值已经归0", Toast.LENGTH_SHORT).show();
 		}
 		else if(balance < 0)
 		{
@@ -652,12 +638,9 @@ public class MainActivity extends ActionBarActivity
 			if (x > 10)//right gesture
 			{
 				calendar.getLastMonth();
-				//LogUtil.d("huang", "右滑动"+x);
 			} else if (x < -10)//left gesture
 			{
-			
 				calendar.getNextMonth();
-				//LogUtil.d("huang", "左"+x);
 			}
 			List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
 			calendar.setDrinkRecords(drinkDateRecords);
