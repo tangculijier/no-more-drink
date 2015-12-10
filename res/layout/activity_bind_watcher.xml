@@ -128,7 +128,7 @@
 
             <EditText
                 android:id="@+id/bind_message_text"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="20"
                 android:inputType="textMultiLine"
@@ -138,6 +138,7 @@
             
     		<com.gc.materialdesign.views.ButtonFlat
                 android:id="@+id/confirm_bind_button"
+                android:paddingTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/blue_MD"
