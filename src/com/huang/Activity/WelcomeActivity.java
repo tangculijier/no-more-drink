@@ -99,10 +99,12 @@ public class WelcomeActivity extends Activity
 		LayoutInflater inflater = getLayoutInflater().from(this);
 		View viewPager1 = inflater.inflate(R.layout.viewpage_1, null);
 		View viewPager2 = inflater.inflate(R.layout.viewpage_2, null);
+		View viewPager3 = inflater.inflate(R.layout.viewpage_3, null);
 		viewPagerList.add(viewPager1);
 		viewPagerList.add(viewPager2);
+		viewPagerList.add(viewPager3);
 		viewPager.setAdapter(new MyViewPagerAdapter());
-	    beginButton = (Button)viewPager2.findViewById(R.id.begin);
+	    beginButton = (Button)viewPager3.findViewById(R.id.begin);
 
 	    man = (ImageView)viewPager2.findViewById(R.id.man);
 	    drink = (ImageView)viewPager2.findViewById(R.id.drink);
@@ -138,11 +140,15 @@ public class WelcomeActivity extends Activity
 						timing++;
 						targetViewStartAnimation(blance_example,AnimationUtil.getSubBalanceAnimation(0f),animationDelayTime + (timing++ * duration));
 						timing++;
-						targetViewStartAnimation(beginButton,jumpAnimation,animationDelayTime + (timing++ * duration));
 					
 					}
 				}
-				else
+				else if(position == 2)
+				{
+					targetViewStartAnimation(beginButton,jumpAnimation,1000);
+
+				}
+				if(position != 2)
 				{
 					//beginButtonªÿπÈŒª÷√
 					ObjectAnimator buttonDownAnimaor = ObjectAnimator.ofFloat(beginButton, "translationY", 40f, 0f);

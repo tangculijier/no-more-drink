@@ -224,15 +224,15 @@ public class MainActivity extends ActionBarActivity
 		registerSendMessageBroadCast();
 
 		
-		if(keepDay !=0 && (keepDay % AppConst.BALANCE_REWARD_VALUE == 0))
+		if(keepDay !=0 && (keepDay / AppConst.BALANCE_REWARD_VALUE > 0))
 		{
-			int roundToday = keepDay / AppConst.BALANCE_REWARD_VALUE;
+			int reward = keepDay / AppConst.BALANCE_REWARD_VALUE;
 			int roundDay = setting.getInt(AppConst.ROUND_DAY, 0);
-			if(roundToday != roundDay)	//这次奖励还没有加过
+			if(reward != roundDay)	//这次奖励还没有加过
 			{
-				Toast.makeText(this, "已保持3天,健康值+1,加油!", Toast.LENGTH_SHORT).show();
-				calculateBalance(true);
-				setting.edit().putInt(AppConst.ROUND_DAY, roundToday).commit();
+				Toast.makeText(this, "已保持"+keepDay+"天,健康值+"+reward+",加油!", Toast.LENGTH_SHORT).show();
+				calculateBalance(reward);
+				setting.edit().putInt(AppConst.ROUND_DAY, reward).commit();
 			}
 			
 		}
@@ -254,7 +254,7 @@ public class MainActivity extends ActionBarActivity
 					public void onClick(View v)
 					{
 						drink();
-						calculateBalance(false);
+						calculateBalance(-1);
 						
 					}
 				});
@@ -389,6 +389,7 @@ public class MainActivity extends ActionBarActivity
 		LogUtil.d("huang", "drink()");
 		faceToSad(true);
 		databaseHelper.insertDrinkTime();
+		setting.edit().putInt(AppConst.ROUND_DAY, 0).commit();//rounday清空
 		List<Habit>  drinkDateRecords = databaseHelper.getCurrentMonthDrinkRecord(calendar.getCurrentDate());
 		calendar.setDrinkRecords(drinkDateRecords);
 		calendar.invalidate();
@@ -505,14 +506,14 @@ public class MainActivity extends ActionBarActivity
 	
 	/**
 	 * 计算健康值
-	 * @param isAdd 是否是增加健康值
+	 * @param addNumber 增加的健康值 可以是正数也可以是负数
 	 */
-	private void calculateBalance(boolean isAdd)
+	private void calculateBalance(int addNumber)
 	{
 			int balance = setting.getInt(AppConst.BALANCE, AppConst.BALANCE_INIT_VALUE);
-			balance = isAdd == true ? balance + 1 : balance - 1 ;
+			balance += addNumber ;
 			final int balanceFinal = balance;
-			AnimationSet animation = isAdd == true ? 
+			AnimationSet animation = addNumber > 0 ? 
 					AnimationUtil.getAddBalanceAnimation() : AnimationUtil.getSubBalanceAnimation(0.6f);
 			animation.setAnimationListener(new AnimationListener()
 			{

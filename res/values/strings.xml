@@ -31,6 +31,8 @@
     <string name="viewpage.second.title">「健康值」</string>
     <string name="viewpage.second.headline">用来衡量你的表现</string>
     <string name="viewpage.second.button">Go</string>
+    <string name="viewpage.third.title">「目标」</string>
+    <string name="viewpage.third.headline">请努力达到100</string>
 
     <string name="title_activity_contacts">ContactsActivity</string>
 
