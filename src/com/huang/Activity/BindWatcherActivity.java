@@ -158,7 +158,7 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 	
 	private void showBindInfo()
 	{
-		if(bindInfoLayout.getVisibility() == View.INVISIBLE)
+		if(!bindInfoLayout.isShown())
 		{
 			bindInfoLayout.setVisibility(View.VISIBLE);
 		}
@@ -166,7 +166,7 @@ public class BindWatcherActivity extends ActionBarBaseActivity
 	
 	private void hideBindInfo()
 	{
-		if(bindInfoLayout.getVisibility() == View.VISIBLE)
+		if(bindInfoLayout.isShown())
 		{
 			bindInfoLayout.setVisibility(View.INVISIBLE);
 		}
