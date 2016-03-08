@@ -10,7 +10,6 @@ import java.util.Date;
 public class DateUtil
 {
 
-	
 	/**
 	 * 
 	 * @param last 前一个日期
@@ -99,6 +98,36 @@ public class DateUtil
 		res[1] =DateToStringNoHour(last) + " 23:59:59";
 		return res;
 	}
+	
+	/**
+	 * 得到该年份的第一天和最后一天
+	 * @param Date eg:Thu Oct 01 16:46:18 CST 2016
+	 * @return String[] eg:2016-01-01 and 2016-12-31 23:59:59
+	 */
+	public static String[] getThisYearFirstDayAndLastDay(Date currentDate)
+	{
+		
+		String[] res = new String[2];
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currentDate);
+		int currentYear = cal.get(Calendar.YEAR);
+		
+		cal.clear();
+		cal.set(Calendar.YEAR, currentYear);  
+		Date currYearFirstDay = cal.getTime();
+		res[0] = DateToStringNoHour(currYearFirstDay);
+
+		cal.clear();  
+        cal.set(Calendar.YEAR, currentYear);  
+        cal.roll(Calendar.DAY_OF_YEAR, -1);  
+        Date currYearLastDay = cal.getTime();  
+        res[1] = DateToStringNoHour(currYearLastDay);
+
+		return res;
+	}
+	
+	
+	
 	
 	/**
 	 * @param currentDate 当前时间 example : 2015-11-15

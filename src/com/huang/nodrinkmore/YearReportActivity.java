@@ -1,25 +1,37 @@
 package com.huang.nodrinkmore;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
+import com.github.mikephil.charting.components.YAxis.YAxisLabelPosition;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.huang.Activity.ActionBarBaseActivity;
+import com.huang.model.ReportOfMonth;
 import com.huang.util.AppConst;
+import com.huang.util.DatabaseHelper;
+import com.huang.util.DateUtil;
+import com.huang.util.LogUtil;
 
 /**  
  * 年报activity  通过年报可以进入月报界面-MonthReportActivity
@@ -31,18 +43,26 @@ public class YearReportActivity extends ActionBarBaseActivity implements
 OnChartValueSelectedListener
 {
 
-    private HorizontalBarChart yearChart;
+    private BarChart yearChart;
     private Typeface tf;
-    
-    
+    DatabaseHelper dataBaseHelper;
+    Calendar cal ;
+    List<ReportOfMonth> reportList;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_year_report);
-		yearChart = (HorizontalBarChart) findViewById(R.id.year_report_chart);
+		dataBaseHelper = DatabaseHelper.getInstance(this);
+		
+		cal = Calendar.getInstance();
+		Date currentTime = cal.getTime();
+		reportList = dataBaseHelper.getYearStatist(currentTime);
+		
+		yearChart = (BarChart) findViewById(R.id.year_report_chart);
 		yearChart.setOnChartValueSelectedListener(this);
         tf = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
+        
         
         chartInit();
 	}
@@ -52,45 +72,44 @@ OnChartValueSelectedListener
 		yearChart.setDrawValueAboveBar(true);
 
 		yearChart.setDescription("");
-
 	        // if more than 60 entries are displayed in the chart, no values will be
 	        // drawn
-		yearChart.setMaxVisibleValueCount(100);
-
+		yearChart.setMaxVisibleValueCount(60);
 	        // scaling can now only be done on x- and y-axis separately
 		yearChart.setPinchZoom(false);
 
-	        // draw shadows for each bar that show the maximum value
-	        // mChart.setDrawBarShadow(true);
-
-	        // mChart.setDrawXLabels(false);
-
 		yearChart.setDrawGridBackground(false);
-		yearChart.setGridBackgroundColor(Color.WHITE & 0x70FFFFFF);
 	        // mChart.setDrawYLabels(false);
-			//控制x轴列表
-	        XAxis xl = yearChart.getXAxis();
-	        xl.setPosition(XAxisPosition.BOTTOM);
-	        xl.setTypeface(tf);
-	        xl.setDrawAxisLine(true);
-	        xl.setDrawGridLines(true);
-	        xl.setGridLineWidth(0.3f);
-	        xl.setTextSize(12f);
 
-	        YAxis yl = yearChart.getAxisLeft();
-	        yl.setTypeface(tf);
-	        yl.setDrawAxisLine(true);
-	        yl.setDrawGridLines(true);
-	        yl.setGridLineWidth(0.3f);
-	        yl.setTextSize(12f);
+	        tf = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 
-	        YAxis yr = yearChart.getAxisRight();
-	        yr.setTypeface(tf);
-	        yr.setDrawAxisLine(true);
-	        yr.setDrawGridLines(false);
-//	        yr.setInverted(true);
+	        XAxis xAxis = yearChart.getXAxis();
+	        xAxis.setPosition(XAxisPosition.BOTTOM);
+	        xAxis.setTypeface(tf);
+	        xAxis.setDrawGridLines(false);
+	        xAxis.setSpaceBetweenLabels(2);
 
-	        setData(50);
+
+	        YAxis leftAxis = yearChart.getAxisLeft();
+	        leftAxis.setTypeface(tf);
+	        leftAxis.setLabelCount(8, false);
+	        leftAxis.setPosition(YAxisLabelPosition.OUTSIDE_CHART);
+	        leftAxis.setSpaceTop(15f);
+
+	        YAxis rightAxis = yearChart.getAxisRight();
+	        rightAxis.setDrawGridLines(false);
+	        rightAxis.setTypeface(tf);
+	        rightAxis.setLabelCount(8, false);
+	        rightAxis.setSpaceTop(15f);
+
+	        Legend l = yearChart.getLegend();
+	        l.setPosition(LegendPosition.BELOW_CHART_LEFT);
+	        l.setForm(LegendForm.SQUARE);
+	        l.setFormSize(9f);
+	        l.setTextSize(11f);
+	        l.setXEntrySpace(4f);
+
+	        setData(reportList);
 	        yearChart.animateY(2500);
 
 
@@ -105,15 +124,29 @@ OnChartValueSelectedListener
 		//yearChart.animateY(2500);//设置动画效果时间
 	}
 	
-	 private void setData( float range) {
+	 private void setData( List<ReportOfMonth> reportList) {
 
 	        ArrayList<String> xVals = new ArrayList<String>();//列名
 	        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();//数据列
 
-	        for (int i = AppConst.mMonths.length ; i >= 0; i--) 
+	        for (int i = 0, j = 0 ; i < AppConst.mMonths.length; i++) 
 	        {
 	            xVals.add(AppConst.mMonths[i % 12]);
-	            yVals1.add(new BarEntry((float) (Math.random() * range), i));
+	            if(reportList != null && reportList.size() > 0)
+	            {
+	            	if(j < reportList.size())
+	            	{
+	            		ReportOfMonth report = reportList.get(j);
+			            int monthIndex = DateUtil.getMonth(DateUtil.StringToDate(report.getDate()));
+			            if(monthIndex == i+1)
+			            {
+				            yVals1.add(new BarEntry(report.getTotaltime(), i));
+				            j++;
+			            }
+	            	}
+	            	
+	            }
+	            
 	        }
 
 	        BarDataSet set1 = new BarDataSet(yVals1,getResources().getString( R.string.activity_data_title));
@@ -124,19 +157,20 @@ OnChartValueSelectedListener
 	        BarData data = new BarData(xVals, yearDrinkData);
 	        data.setValueTextSize(12f);
 	        data.setValueTypeface(tf);
-
 	        yearChart.setData(data);
 	    }
 	@Override
 	public void onValueSelected(Entry e, int dataSetIndex, Highlight h)
 	{
-		// TODO Auto-generated method stub
+		  Toast.makeText(YearReportActivity.this, e.getXIndex()+"", Toast.LENGTH_SHORT)
+          .show();
 		
 	}
 	@Override
 	public void onNothingSelected()
 	{
-		// TODO Auto-generated method stub
+		 Toast.makeText(YearReportActivity.this,"nothing", Toast.LENGTH_SHORT)
+         .show();
 		
 	}
 	

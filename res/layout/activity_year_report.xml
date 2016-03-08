@@ -4,10 +4,9 @@
     android:layout_height="match_parent"
     tools:context="com.huang.nodrinkmore.YearReportActivity" >
 
-     <com.github.mikephil.charting.charts.HorizontalBarChart
+        <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/year_report_chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
-        />
+       />
 </LinearLayout>

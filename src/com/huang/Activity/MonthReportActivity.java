@@ -36,7 +36,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.huang.model.Report;
+import com.huang.model.ReportOfMonth;
 import com.huang.nodrinkmore.R;
 import com.huang.util.AppConst;
 import com.huang.util.DatabaseHelper;
@@ -193,7 +193,7 @@ public class MonthReportActivity extends Activity implements
             String pickDateStr = myyear + "-" + monthOfYearStr + "-" + "01";
             Date pickDate = DateUtil.getLastDateInMonth(DateUtil.StringToDate(pickDateStr)); 
             LogUtil.d("huang", "pickDate="+pickDate);
-            final Report report = databaseHelper.getAnalysis(DateUtil.DateToStringNoHour(pickDate));
+            final ReportOfMonth report = databaseHelper.getAnalysis(DateUtil.DateToStringNoHour(pickDate));
             if(!TextUtils.isEmpty(report.getDate()))
             {
             	//Ë¢ÐÂËùÓÐ

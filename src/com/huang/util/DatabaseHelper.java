@@ -17,7 +17,7 @@ import android.text.TextUtils;
 import com.huang.model.Habit;
 import com.huang.model.ModelReaderContract.AnalysisEntry;
 import com.huang.model.ModelReaderContract.HabitEntry;
-import com.huang.model.Report;
+import com.huang.model.ReportOfMonth;
 /**
  * 操纵sqlite的工具类
  */
@@ -480,13 +480,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	 *  currentMonth应该为这个月的最后一天
 	 * @return 这个currentMonth的所有分析数据
 	 */
-	public Report getAnalysis(String currentMonth)
+	public ReportOfMonth getAnalysis(String currentMonth)
 	{
         SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor=db.rawQuery("select nodrinkdays,longestkeepday,morningtimes,afternoontimes,eveningtimes"
 				+ " from analysis where month = ?",new String[]{(currentMonth)});  
 
-		Report report = new Report();
+		ReportOfMonth report = new ReportOfMonth();
 		
 		if(cursor.moveToFirst())
 		{
@@ -499,6 +499,42 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		}
 		//尽量不要返回空值
 		return report;
+		
+	}
+	public List<ReportOfMonth> getYearStatist(Date currentDate)
+	{
+		List<ReportOfMonth> res = new  ArrayList<ReportOfMonth>();
+		LogUtil.d("huang","currentDate="+currentDate);
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String[] FirstDayAndLastInThisYear = DateUtil.getThisYearFirstDayAndLastDay(currentDate);
+		Cursor cursor = db.rawQuery("select month,morningtimes+afternoontimes+eveningtimes  from analysis where month between ? and ? order by `month` ",
+				FirstDayAndLastInThisYear); 
+		LogUtil.d("huang","FirstDayAndLastInThisYear="+FirstDayAndLastInThisYear[0]);
+		LogUtil.d("huang","FirstDayAndLastInThisYear="+FirstDayAndLastInThisYear[1]);
+
+		if (cursor.moveToFirst())
+			
+		{
+			for (int i = 0; i < cursor.getCount(); i++)
+			{
+				//LogUtil.d("huang",cursor.getString(0)+":"+);
+				ReportOfMonth report = new ReportOfMonth();
+				report.setDate(cursor.getString(0));
+				report.setTotaltime(cursor.getInt(1));
+				res.add(report);
+				cursor.moveToNext();
+			
+			}
+			
+		} 
+		else//如果本月有纪录
+		{
+			LogUtil.d("huang","nothing");
+		}
+		if (!cursor.isClosed())
+			cursor.close();
+		return res;
 		
 	}
 	

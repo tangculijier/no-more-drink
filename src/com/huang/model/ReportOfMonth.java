@@ -7,7 +7,7 @@
 
 package com.huang.model;
 
-public class Report
+public class ReportOfMonth
 {
 	/**
 	 * 月报的所属年月 设定为每月最后一天 如2015-11-30
@@ -28,6 +28,7 @@ public class Report
 	int afternoontimes;
 	int eveningtimes;
 	
+	int totaltime;
 	public String getDate()
 	{
 		return date;
@@ -75,5 +76,13 @@ public class Report
 	public void setEveningtimes(int eveningtimes)
 	{
 		this.eveningtimes = eveningtimes;
+	}
+	public int getTotaltime()
+	{
+		return totaltime;
+	}
+	public void setTotaltime(int totaltime)
+	{
+		this.totaltime = totaltime;
 	}
 }
