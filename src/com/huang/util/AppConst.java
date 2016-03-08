@@ -39,4 +39,8 @@ public class AppConst
 	 * china cellphone number length
 	 */
 	public static final int CELLPHONE_LENGTH = 11;
+	
+	public static String[] mMonths = new String[] {
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
+    };
 }

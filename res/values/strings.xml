@@ -44,4 +44,8 @@
     <string name="activity.title.contacts">添加监督人</string>
     <string name="title_activity_year_report">年度报告</string>
 
+    
+    
+       <!-- YearActivity -->
+    <string name="activity.data.title">年度数据 单位:瓶</string>
 </resources>
