@@ -5,8 +5,8 @@
     <string name="app_name">不喝饮料</string>
     <string name="tip">提示</string>
     <string name="confirm">确定</string>
-     <string name="reset">取消</string>
-     
+    <string name="reset">取消</string>
+
     <!-- Mainactivity -->
     <string name="title.first">不喝饮料已保持</string>
     <string name="action_settings">Settings</string>
@@ -33,10 +33,8 @@
     <string name="viewpage.second.button">Go</string>
     <string name="viewpage.third.title">「目标」</string>
     <string name="viewpage.third.headline">请努力达到100</string>
-
     <string name="title_activity_contacts">ContactsActivity</string>
 
-    
     <!-- BindWatcherActivity -->
     <string name="activity.title.bind_watcher">添加监督人</string>
     <string name="bind.title">开启监督人模式后，添加监督人电话成功后，每次喝饮料的时候系统会自动发给监督人一条短信。</string>
@@ -44,5 +42,6 @@
     <string name="bind.switch.text">开启监督人模式</string>
     <!-- ContactsActivity -->
     <string name="activity.title.contacts">添加监督人</string>
+    <string name="title_activity_year_report">年度报告</string>
 
 </resources>

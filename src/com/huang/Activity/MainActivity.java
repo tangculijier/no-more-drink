@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.gc.materialdesign.widgets.SnackBar;
 import com.huang.model.Habit;
 import com.huang.nodrinkmore.R;
+import com.huang.nodrinkmore.YearReportActivity;
 import com.huang.service.WidgetService;
 import com.huang.service.WidgetService.UpdateViewBinder;
 import com.huang.util.AnimationUtil;
@@ -179,7 +180,8 @@ public class MainActivity extends ActionBarActivity
 			@Override
 			public void onClick(View v)
 			{
-				Intent intent = new Intent(MainActivity.this,MonthReportActivity.class);
+				
+				Intent intent = new Intent(MainActivity.this,YearReportActivity.class);
 				startActivity(intent);
 			}
 		});

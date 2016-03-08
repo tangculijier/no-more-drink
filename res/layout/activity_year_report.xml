@@ -1,0 +1,13 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.huang.nodrinkmore.YearReportActivity" >
+
+     <com.github.mikephil.charting.charts.HorizontalBarChart
+        android:id="@+id/year_report_chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        />
+</LinearLayout>
