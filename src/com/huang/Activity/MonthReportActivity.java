@@ -245,7 +245,7 @@ public class MonthReportActivity extends Activity implements
 			LogUtil.d("huang", "currentTime == null:"+currentTime);
 
 		}
-		else
+		else//不为null说明是从其他activity跳转而来
 		{
 			calendar.setTime(currentTime);
 			LogUtil.d("huang", "currentTime != null:"+currentTime);

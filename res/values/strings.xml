@@ -48,4 +48,5 @@
     
        <!-- YearActivity -->
     <string name="activity.data.title">年度数据 单位:瓶</string>
+      <string name="activity.text.nodrinknumber">暂时没有任何数据</string>
 </resources>

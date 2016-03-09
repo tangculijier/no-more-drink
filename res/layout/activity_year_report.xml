@@ -2,11 +2,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.huang.nodrinkmore.YearReportActivity" >
 
+    
+        <TextView
+            android:id="@+id/noNumbersText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activity.text.nodrinknumber"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+        
+        
         <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/year_report_chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
        />
+
+
 </LinearLayout>
