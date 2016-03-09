@@ -6,6 +6,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -127,6 +128,13 @@ public class MonthReportActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);// to title
 		setContentView(R.layout.month_report);
+		Intent intent = getIntent();
+		String currentTimeStr  = intent.getStringExtra(AppConst.INTENT_EXTRA_TIME);
+		if(!TextUtils.isEmpty(currentTimeStr))
+		{
+			LogUtil.d("huang", "intnt="+currentTimeStr);
+			currentTime = DateUtil.StringToDate(currentTimeStr);
+		}
 		ifFirstAnalysis();
 		findById();
 		initData();
@@ -229,9 +237,22 @@ public class MonthReportActivity extends Activity implements
     };
 	public void initData()
 	{
-		
 		calendar = Calendar.getInstance();
-		currentTime = calendar.getTime();
+		if(currentTime == null)
+		{
+			
+			currentTime = calendar.getTime();
+			LogUtil.d("huang", "currentTime == null:"+currentTime);
+
+		}
+		else
+		{
+			calendar.setTime(currentTime);
+			LogUtil.d("huang", "currentTime != null:"+currentTime);
+
+		}
+
+		
 		databaseHelper = DatabaseHelper.getInstance(this);
 		
 		noDrinkDays = databaseHelper.getNoDrinkDaysNumber(currentTime);

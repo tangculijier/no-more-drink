@@ -5,33 +5,31 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import android.graphics.Color;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.components.Legend.LegendPosition;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.YAxisLabelPosition;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.huang.Activity.ActionBarBaseActivity;
+import com.huang.Activity.MonthReportActivity;
 import com.huang.model.ReportOfMonth;
 import com.huang.util.AppConst;
 import com.huang.util.DatabaseHelper;
 import com.huang.util.DateUtil;
-import com.huang.util.LogUtil;
 
 /**  
  * 年报activity  通过年报可以进入月报界面-MonthReportActivity
@@ -71,7 +69,7 @@ OnChartValueSelectedListener
 		yearChart.setDrawBarShadow(false);
 		yearChart.setDrawValueAboveBar(true);
 
-		yearChart.setDescription("");
+		yearChart.setDescription(cal.get(Calendar.YEAR)+"年");
 	        // if more than 60 entries are displayed in the chart, no values will be
 	        // drawn
 		yearChart.setMaxVisibleValueCount(60);
@@ -140,7 +138,7 @@ OnChartValueSelectedListener
 			            int monthIndex = DateUtil.getMonth(DateUtil.StringToDate(report.getDate()));
 			            if(monthIndex == i+1)
 			            {
-				            yVals1.add(new BarEntry(report.getTotaltime(), i));
+				            yVals1.add(new BarEntry(report.getTotaltime(), i,report));
 				            j++;
 			            }
 	            	}
@@ -162,15 +160,22 @@ OnChartValueSelectedListener
 	@Override
 	public void onValueSelected(Entry e, int dataSetIndex, Highlight h)
 	{
-		  Toast.makeText(YearReportActivity.this, e.getXIndex()+"", Toast.LENGTH_SHORT)
-          .show();
+		ReportOfMonth report = (ReportOfMonth) e.getData();
+		if(report != null)
+		{
+			Intent gotoMonthReport = new Intent(YearReportActivity.this,MonthReportActivity.class);
+			gotoMonthReport.putExtra(AppConst.INTENT_EXTRA_TIME, report.getDate());
+			startActivity(gotoMonthReport);
+		}
+		
+		
+		 // Toast.makeText(YearReportActivity.this, report.getDate()+"", Toast.LENGTH_SHORT)
+         // .show();
 		
 	}
 	@Override
 	public void onNothingSelected()
 	{
-		 Toast.makeText(YearReportActivity.this,"nothing", Toast.LENGTH_SHORT)
-         .show();
 		
 	}
 	

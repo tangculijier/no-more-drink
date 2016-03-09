@@ -40,7 +40,9 @@ public class AppConst
 	 */
 	public static final int CELLPHONE_LENGTH = 11;
 	
-	public static String[] mMonths = new String[] {
+	public static final String[] mMonths = new String[] {
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
     };
+	
+	public static final String INTENT_EXTRA_TIME = "currentTime";
 }

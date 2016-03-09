@@ -501,6 +501,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		return report;
 		
 	}
+	
+	
+	//得到年度数据
 	public List<ReportOfMonth> getYearStatist(Date currentDate)
 	{
 		List<ReportOfMonth> res = new  ArrayList<ReportOfMonth>();
@@ -513,12 +516,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		LogUtil.d("huang","FirstDayAndLastInThisYear="+FirstDayAndLastInThisYear[0]);
 		LogUtil.d("huang","FirstDayAndLastInThisYear="+FirstDayAndLastInThisYear[1]);
 
+		
+		
 		if (cursor.moveToFirst())
 			
 		{
 			for (int i = 0; i < cursor.getCount(); i++)
 			{
-				//LogUtil.d("huang",cursor.getString(0)+":"+);
+				LogUtil.d("huang",cursor.getString(0)+":");
 				ReportOfMonth report = new ReportOfMonth();
 				report.setDate(cursor.getString(0));
 				report.setTotaltime(cursor.getInt(1));
@@ -528,10 +533,18 @@ public class DatabaseHelper extends SQLiteOpenHelper
 			}
 			
 		} 
-		else//如果本月有纪录
+		else
 		{
 			LogUtil.d("huang","nothing");
 		}
+		
+		//最后再添加本月数据
+		int thisMonthTimes = this.getMonthSumOfDrinkTimes(currentDate);
+		ReportOfMonth thisMonthReport = new ReportOfMonth();
+		thisMonthReport.setDate(DateUtil.DateToStringNoHour(currentDate));
+		thisMonthReport.setTotaltime(thisMonthTimes);
+		res.add(thisMonthReport);
+		
 		if (!cursor.isClosed())
 			cursor.close();
 		return res;
